@@ -1,0 +1,101 @@
+---
+title: "Factors in R"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+Factors are a data type in R, just like numeric variables. They can be tricky to deal with, so here are some hints to help. More can be found in a very useful PeerJ preprint at https://peerj.com/preprints/3163/.
+
+
+Factors are different from characters and have a set of levels:
+
+```{r}
+summary(iris$Species)
+```
+
+
+### Removing factor levels
+
+We can remove factor levels from the data, but R will retain that factor level:
+
+```{r}
+iris2<-filter(iris, Species == c("setosa", "versicolor"))
+summary(iris2$Species)
+```
+
+If we need to remove a factor level, we can do that with ```droplevels()``` once the observations containing that factor level have been removed:
+
+```{r}
+iris2<-droplevels(iris2)
+summary(iris2$Species)
+```
+
+
+### Renaming factor levels
+
+```levels()``` can be used to check and rename factor levels:
+
+```{r}
+levels(iris2$Species)
+levels(iris2$Species)<-c("Iris setosa", "Iris versicolor")
+levels(iris2$Species)
+```
+
+Or it can be used to just rename one factor:
+
+```{r}
+levels(iris2$Species)[levels(iris2$Species)=="Iris setosa"]<-"setosa"
+levels(iris2$Species)[levels(iris2$Species)=="Iris versicolor"]<-"versicolor"
+levels(iris2$Species)
+```
+
+We can also use that if we want to reduce the number of factors, and lump different categories together, or if there are some misspelt factor levels that should all be the same.
+
+However, if we try to change a factor level that does not exist, we won't get an error message, so double checking what the code did is a good idea:
+
+```{r}
+levels(iris2$Species)[levels(iris2$Species)=="Iris virginica"]<-"virginica"
+levels(iris2$Species)
+```
+
+
+### Ordering factor levels
+
+Factors are ordered alphabetically in plots:
+
+```{r}
+ggplot(iris2, aes(x = Species, y = Sepal.Width)) +
+  geom_boxplot()
+```
+
+We can change the order manually:
+
+```{r}
+iris2$Species = factor(iris2$Species,levels(iris2$Species)[c(2,1)]) # the second factor level will now be first, and the first factor level will now be second
+ggplot(iris2, aes(x = Species, y = Sepal.Width)) +
+  geom_boxplot()
+```
+
+We can also change the order with ```reorder```, which reorders the factor according to another variable, from low to high:
+
+```{r}
+ggplot(iris, aes(x = Species, y = Sepal.Width)) +
+  geom_boxplot()
+iris$Species<-reorder(iris$Species, iris$Sepal.Width) # this will reorder the levels of variable Species, according to the Sepal Width
+ggplot(iris, aes(x = Species, y = Sepal.Width)) +
+  geom_boxplot()
+```
+
+The order of appearance can also be retained from a dataset (sort the factor levels into the right order in your csv file, then load it into R, and don't tell anyone about it):
+
+```{r, eval = FALSE}
+mydata$var1 <- factor(mydata$var1, levels=unique(mydata$var1))
+```
+
+There are some tidyverse options for all of this, but I don't know them. They are in the manuscript mentioned at the top though!
+
