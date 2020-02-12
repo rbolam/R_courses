@@ -1,0 +1,289 @@
+---
+title: "Tidyverse"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, results = 'hide')
+library(tidyverse)
+```
+
+Today we will learn some useful data manipulation functions in R. A lot of this stuff can be done with base R functions, but if you don't know how to do it in base R, using tidyverse is probably easier to learn! I will be around to help, but please also help each other where possible.   
+
+### Resources
+
+There is a useful cheat sheet, which you might want to have open for the whole session, available at https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf  
+
+And of course this book on R for data science is useful too: http://r4ds.had.co.nz/   
+
+### Outline
+
+Here is a list of things we will learn today:
+
+1. Filtering observations using ```filter()```  
+2. Selecting variables using ```select()```  
+3. Changing data from wide to long format and vice versa, using ```gather()``` and ```spread()```  
+4. Merging different dataframes together with the ```bind()``` and ```join()``` functions  
+5. Using the pipe operator ```%>%``` to write tidy code and group observation with ```group_by()```  
+6. Calculating new variables with ```mutate()``` and ```summarise()```  
+
+### How we will work today
+
+There are lots of functions in different packages, and altogether they are called tidyverse. The two packages we will use today are dplyr and tidyr, but you can download all of them in one go too. we will not use every single function, or different way of using them, but instead focus on the main ones that will hopefully come in handy!  
+
+I have not included the output of the code here, so you will have to run it yourself :)  
+
+> There will be some exercises, indicated by the line on the left, so you can get some practice in.  
+
+
+**PLEASE DO NOT TRY TO DOWNLOAD ALL TIDYVERSE PACKAGES AS IT MIGHT TAKE A LONG LONG TIME, SO STICK TO DPLYR, TIDYR AND GGPLOT FOR NOW!!!**
+
+
+```{r, eval = FALSE}
+install.packages("dplyr", "tidyr", "ggplot2")
+library(dplyr, tidyr, ggplot2)
+```
+
+We will use different dataframes that are built into R. I usually look at the data to start with, mainly using ```str()```, ```summary()``` or ```head()```. To understand what every function does, it might be helpful to run these before and after you have made changes to the data!
+
+We will start using the dataframe ```starwars```.
+
+```{r }
+str(starwars[,1:10]) # to avoid seeing the lengthy film output every time, you can use this instead of str(starwars)
+summary(starwars)
+head(starwars)
+```
+The functions follow the normal form in R, for example, we can change column names using ```rename()```:
+
+```{r }
+starwarsm <- rename(starwars, mass_in_kg = mass)
+```
+  
+  > What do the functions ```distinct()``` and ```arrange()``` do?
+
+## 1. filter()
+
+One of the simplest and most useful functions is ```filter()```. 
+
+```filter()``` will retain or remove rows in your dataframe, according to conditions you set:
+
+```{r }
+
+ggplot(data = starwars, aes(x = height)) +
+  geom_histogram(binwidth = 10)  # makes a histogram with ggplot, which we will learn about in another session
+
+tall <- filter(starwars, height > 180) 
+# this creates a new dataframe called tall, which are all values from dataframe starwars where height is above 180
+
+ggplot(data = tall, aes(x = height)) +
+  geom_histogram(binwidth = 10)
+
+```
+  
+> Exercise: Create a dataframe where all heights are below 150, and check it worked using ```ggplot()```  
+
+We can also look for exact values. Sometimes you need to use ```=```, sometimes ```==```:
+
+```{r }
+height180 <- filter(starwars, height == 180)  
+# use == for numbers and = for characters/factors
+summary(height180$height)
+```
+
+The structure for NA values is slightly different (```x = NA``` doesn't work):
+
+```{r }
+summary(factor(starwars$hair_color))
+# hair_color contains 5 rows with NA values
+
+hairNA<-filter(starwars, is.na(hair_color))
+# In this case we keep those rows where hair_color is NA
+
+summary(factor(hairNA$hair_color))
+```
+  
+> Can you create a dataframe where the variable hair_color is never NA? The cheat sheet might help.  
+
+> In the starwars dataframe, retain only observations where eye_color is red.  
+
+> Can you also create a new dataframe with three colours? You might need to use this operator: ```%in%``` 
+
+
+## 2. select()
+
+The ```select()``` function can be used to include or exclude columns from the dataframe:
+
+```{r }
+str(starwars[,1:10])
+
+sw2 <- select(starwars, -height) 
+# this will make a new dataframe, without the variable height
+
+str(sw2[,1:9])
+
+sw3 <- select(starwars, homeworld, species) 
+# this will make a new dataframe, with only the variables homeworld and species
+
+str(sw3)
+
+```
+  
+> Using starwars, create a new dataframe where all variables start with h.  
+
+There are lots of other ways of using ```filter()``` and ```select()```, all listed on the cheat sheet.
+
+## 3. Reshaping data
+
+We can use tidyverse for reshaping data. As an example, look at table4b in the tidyr package. The values underneath 1999 and 2000 refer to a population:
+
+```{r }
+table4b
+```
+
+We might not want each year as a column heading in our dataframe, but have both years in a new column called year. We would also need another new variable, which would list the values currently in 1999 and 2000, we will call it population:
+
+```{r }
+table4bnew <- gather(table4b, "year", "population", 2:3)
+table4bnew
+```
+  
+> Can you reverse what you did, and put the data back into the original format? Use the function ```spread()```.  
+
+> In the starswars dataframe, can you combine hair_color, skin_color and eye_color into two new variables: typeofcol and col (or whatever names you can think of)?  
+
+## 4. Merging dataframes
+
+tidyverse has the functions ```bind_cols()``` and ```bind_rows()``` which are similar to cbind and rbind. They do as they say - they bind rows or columns of dataframes together.
+
+It is also possible to merge two dataframes based on one or more columns.
+
+First we need to create two dataframes that have some overlapping values in the same column, using state.name, state.area and state.region:
+
+
+```{r }
+head(state.name)
+summary(state.area)
+summary(state.region)
+
+## first we need to turn them into dataframes and stick some of them together
+
+
+state2 <- bind_cols(data_frame(state.name, state.area)) #we stick these two together
+state3 <- bind_cols(data_frame(state.name, state.region))
+
+head(state2)
+head(state3)
+
+# Now we create some overlap between these two dataframes, to learn how join() works:
+
+state2 <- slice(state2, 1:30) #slice selects the rows 1 to 30 in this case
+state3 <- slice(state3, 21:50)
+
+```
+
+Now we can make different dataframes with different functions. When I use these functions I check and double check what exactly each function does, as it can get a bit confusing:
+
+```{r }
+state4 <- left_join(state2, state3, by = "state.name")
+# this will keep all the data in state2, and will add region from state3 to the states that appear in both dataframes. If the state is not in state3, the region will be NA
+str(state4)
+
+state5<-inner_join(state2, state3, by = "state.name")
+# this will only keep states that appear in both dataframes
+str(state5)
+
+```
+  
+> Can you join all of the data in state2 and state3 together, so you end up with 3 columns and 50 rows, and probably a few NAs?  
+  
+> What does anti_join() do? Try it with state2 and state3.  
+  
+I have used these functions loads to merge species level data, which is handy as species names are (supposedly) standardised!
+
+## 5. Piping %>% and group_by()
+
+If we need to do a lot of data manipulation in a dataframe, we can use piping, with the piping operator ```%>%```. Have a look at this **shockingly untidy** example:
+
+```{r }
+starwars2 <- filter(starwars, !is.na(hair_color))
+starwars2 <- select(starwars2, -eye_color)
+starwars2 <- arrange(starwars2, -height)
+
+ggplot(starwars2, aes(x = hair_color, y = height)) +
+  geom_boxplot()
+```
+
+If we use piping, we can reduce the code and have less opportunities for misspellings etc. I have written the code below with pipes, but it does exactly the same as the code above:
+
+```{r }
+starwars2 <- starwars %>%
+  filter(!is.na(hair_color)) %>% 
+  select(-eye_color) %>% 
+  arrange(-height)
+# rather than having to write starwars2 at the start of each bracket, we don't need to write it apart from the first part of the code
+# to save what we are doing, we need to start with dfnew <- df %>%, followed by whatever we are doing with the dataframe
+
+ggplot(starwars2, aes(x = hair_color, y = height)) +
+  geom_boxplot()
+```
+  
+> Compare the code with and witout pipe closely, so you understand how to structure the pipe.  
+
+
+Have a look at this code:
+```{r }
+starwars3 <- filter(starwars, eye_color == "brown")
+starwars3 <- select(starwars3, -birth_year)
+starwars3 <- sample_n(starwars3, 100, replace = TRUE)
+```
+  
+  > Can you turn the above horrible code into a nice pipe? Hint: the keyboard shortcut for the pipe operator is Ctrl + Shift + M
+
+
+
+## 6. mutate() and summarise()
+
+We can use ```mutate()``` to calculate new variables, based on others we already have:
+
+```{r}
+starwars <- mutate(starwars, mph = mass / height)
+# the new variable is called mph
+
+ggplot(starwars, aes(x = species, y = mph)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+
+```mutate()``` can also change variables according to conditions we set:
+
+```{r}
+str(starwars[,1:10])
+starwars<-mutate_if(starwars, is.character, as.factor)
+str(starwars[,1:10])
+# this will turn all variables that are factors into characters, or vice versa:
+
+```
+
+  
+> Change the variable homeworld into a factor.  
+
+
+We can also easily group observations with piping, and calculate summary statistics:
+```{r }
+starwars %>%
+  group_by(species) %>%
+  summarise(meanh = mean(height))
+```
+
+  
+  > Can you calculate the median mass by homeworld?  
+
+And this is the end of our first tutorial! **WELL DONE YOU MADE IT THROUGH!**  
+
+We haven't run these tutorials before so it would be great to get any feedback you might have.
+
+
