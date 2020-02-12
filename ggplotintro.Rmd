@@ -1,0 +1,452 @@
+---
+title: "Data visualisation handout"
+output:
+  word_document: default
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+
+
+
+
+## Useful links/resources
+
+
+There is lots of useful info online on making plots with ggplot2, but this book is a great starting point:
+
+Wickham, H. and Grolemund, G. (2016) R for data science. 
+
+Free at http://r4ds.had.co.nz/ It was written by the guy who wrote the package ggplot2. 
+
+Another useful book is this one: http://www.cookbook-r.com/Graphs/
+
+On the grid package: http://ww2.amstat.org/publications/jse/v18n3/zhou.pdf
+
+
+
+## Loading ggplot2 into R
+
+To start using ggplot2, first open RStudio, then install and load the package with the following code:
+
+```{r, eval=FALSE}
+install.packages("ggplot2")
+library(ggplot2)
+```
+
+There is a lot of information about ggplot2 online, so if you get stuck you can try to google what you are trying to do. There is also a useful data visualisation cheat sheet - once you have used ggplot2 a bit, it will become more and more useful: https://www.rstudio.com/resources/cheatsheets/
+
+
+
+## Some basics of ggplot2
+
+In your code, you need to specify a few things:
+
+- the type of plot you want (called geom)
+- how you display your data - for example the colour or size of dots, bars etc (with scale functions)
+- how the overall plot looks (the theme)
+- whether you want subplots of your data (called facets)
+
+## A very basic plot in ggplot2
+
+We will use data that are in-built in R, using the iris, diamonds and mtcars datasets. 
+
+```{r}
+str(iris) 
+# Have a look at the iris dataset, so you know which variables there are and what types of variables they are
+```
+
+We will start with some short code that will produce a plot in ggplot2. The basic pattern of the ggplot2 function first names the dataset, then the x and y variables. With ```geom_```, you add the type of plot you want:
+
+```{r}
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + geom_point() 
+# this will now produce a basic scatterplot of sepal lengths against petal lengths 
+```
+
+The plot will be empty if you don't specify the type of plot you want:
+
+```{r}
+ggplot(data = iris, aes(x = Sepal.Length, Petal.Length))
+```
+
+
+## Customising a plot
+
+### Axis labels
+
+We can now start to customise the plot, so it looks exactly how we want it to look. We can change the axis labels by adding ```xlab``` or ```ylab```:
+
+```{r}
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +  geom_point() + xlab("Sepal length") + ylab("Petal length")
+```
+
+
+
+### Size and transparency
+
+If you have a lot of data points, it can be difficult to see all of the points as they might overlap. You can change the size or transparency of the points so they are easier to see:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(size=3) 
+# changing the size to 3 will make the dots bigger
+
+
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(alpha=0.3) 
+# Changing alpha to 0.3 will make the dots more transparent. Some of the dots appear darker because there is actually more than one data point in the same place
+
+
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(size=7, alpha=0.5) 
+# You can change the look of a plot by changing both size and transparency
+```
+
+
+### Colour
+
+In ggplot2, we can change things like the colour, size or shape of our data points, either by changing all of them, or by making them look different depending on another variable. We can change the colour of all dots by defining the colour within ```geom_point()```:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(color="blue") 
+```
+
+We could also change the colour of each dot, depending on the type of species it is. To do so we need to add ```aes``` within ```geom_point()```:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(aes(color=Species))
+# Note that there is a legend in your plot now!
+```
+
+The plot will be made with default colours, different for each species. To customise the colours, we need to adjust the scales:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(aes(colour=Species)) + scale_colour_brewer(palette="Greens", name="Iris species")
+```
+
+The scale function is used to customise how our data look, in this case we want to customise the colours in the plot. Whatever we specified in ```geom_point``` as an aesthetic, in this case colour, we need to put into the scale function: ```scale_colour```. Here we will use colours from the RColorBrewer package, so we add ```brewer``` at the end. Inside the bracket we specify which colours we want to use, and ```name``` specifies the title of the legend. If you want to see all of the colour options in RColorBrewer, run the following code:
+
+```{r, eval=FALSE}
+library(RColorBrewer)
+
+display.brewer.all()
+```
+
+
+In the previous example we used a categorical variable (Species) to set the colours. We can also use continuous variables for colours - the colours will change along a gradient:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(aes(colour=Petal.Width)) + scale_colour_gradient(low="yellow", high="blue", name="Petal width")
+```
+
+In this example, we did not use RColorBrewer, but in-built R colour names. You can find a (very long) list of colour names in R here: http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+
+
+
+### Shapes
+
+
+We can change the dots to different symbols too, for example open circles or triangles. Each symbol corresponds to a number, which we add in ```geom_point()```:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(shape=1)
+
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(shape=17)
+```
+
+
+
+We could also change the dots to symbols depending on another variable - similar to changing the colour depending on the species, as in the colour example. This can be useful if we need to use black-and-white plots:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point(aes(shape=Species))
+```
+
+
+
+
+### Zooming in on a plot
+
+Sometimes we might not want to display the whole range of the x- and y-axes, or we want to start them from 0. We can specify the exact axes ranges we want to display using ```coord_cartesian()```:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point() + coord_cartesian(xlim=c(0,10), ylim=c(0,10))
+```
+
+### Adding a line from your model
+
+If you are presenting data to which you fitted a model, you can add the line by using ```geom_smooth()```:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point() + geom_smooth(method=glm) 
+# Here we fit a generalised linear model to the data. 95% confidence intervals are displayed automatically
+
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point() + geom_smooth(method=glm, se=FALSE)
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point() + geom_smooth(method=glm, level=0.99)
+# We can also remove the confidence intervals, or change them to 99% confidence intervals
+```
+
+
+## Customising the overall look of the plot
+
+
+We can change the overall look of the plot by changing the theme. The theme will not affect how your plotted data look, just the setup of the plot:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point() + theme_classic()
+```
+
+For a list of themes see http://ggplot2.tidyverse.org/reference/ggtheme.html. We will look at how we can change these settings manually later.
+
+
+
+
+## Using ggplot2 for different types of plots 
+
+Your plots will look different depending on the variables you are displaying - whether there are one, two or more to display, and whether they are categorical, ordinal or continuous. We will now use the dataset diamonds which is part of the ggplot2 package:
+
+```{r}
+str(diamonds)
+```
+
+### One continuous variable
+
+
+If you have one continuous variable, you will likely use a histogram:
+
+```{r}
+ggplot(data=diamonds, aes(x=carat))+geom_histogram()
+```
+
+You can adjust the number of bars by setting the binwidth:
+
+```{r}
+ggplot(data=diamonds, aes(x=carat))+geom_histogram(bins=5)
+
+ggplot(data=diamonds, aes(x=carat))+geom_histogram(bins=500)
+```
+
+
+You could also use a density plot to display one continuous variable. Note what happens to the y-axis:
+
+```{r}
+ggplot(data=diamonds, aes(x=carat)) + geom_density()
+
+
+ggplot(data=diamonds, aes(x=carat)) + geom_density(aes(fill=cut)) 
+# note that for density plots, we need to use fill not colour - colour would just change the colour of the outline
+```
+
+
+Another option would be an area plot:
+
+```{r}
+ggplot(data=diamonds, aes(x=carat))+geom_area(stat="bin", aes(fill=color))
+
+
+ggplot(data=diamonds, aes(x=carat))+geom_area(stat="bin", aes(fill=color), position="fill")
+```
+
+If you change ```position="stack"``` (which is the default for ```geom_area()```) to ```position="fill"```, the plot effectively shows a percentage on the y-axis. 
+
+
+### One categorical variable
+
+If you have one categorical variable, you will need a bar graph. This will show a count of each of the categories:
+
+```{r}
+ggplot(data=diamonds, aes(x=cut))+geom_bar()
+```
+
+### Two continuous variables
+
+
+If you have two continuous variables, you normally represent them with dots - see the examples from the iris dataset we used at the start.
+
+
+### One continuous and one categorical variable
+
+If you have a categorical and a continuous variable, you would normally put the categorical variable on your x-axis and the continuous variable on your y-axis. These are often displayed as box plots (they show the four quartiles in the data, and outliers as dots):
+
+```{r}
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_boxplot()
+```
+
+There are also other options in ggplot2 such as violin plots:
+
+```{r}
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_violin(scale="area")
+```
+
+Or you could present your data as a bar plot. The default ```geom_bar()``` option just uses a categorical variable for x. To show a categorical x and a continuous y variable, we need to add ```stat="identity"``` here:
+
+```{r}
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_bar(stat="identity") 
+```
+
+You can change the colour of the bar by another categorical variable:
+
+```{r}
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_bar(aes(fill=cut), stat="identity")
+```
+
+
+You can also flip the x- and y-axis:
+
+```{r}
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_bar(stat="identity") + coord_flip()
+```
+
+
+## Adding error bars
+
+To add error bars to a ggplot2 plot, we need to calculate the means and standard errors first. We will create a new dataset with the aggregate function. If you are unsure what your new data look like, use the ```str()``` or ```summary()``` functions:
+
+```{r}
+summaryd<-aggregate(price ~ color, diamonds, FUN = function(x) c(mean = mean(x), sd = sd(x),  n = length(x))) 
+```
+
+We are creating a new dataframe called summaryd. In it, we are summarising the continuous variable price by the color groups. We will get a mean with ```mean```, standard deviation with ```sd``` and number of observations with ```length``` of price within each color group.
+
+```{r}
+summaryd <- do.call(data.frame, summaryd) 
+# this turns it into a dataframe
+
+summaryd$se <- summaryd$price.sd / sqrt(summaryd$price.n)
+```
+
+We add a new variable called se which is the standard deviation divided by the sample size - the standard error. Now we can plot the error bars:
+
+
+```{r}
+ggplot(data=summaryd, aes(x=color, y=price.mean)) + geom_bar(stat="identity", position="dodge") +  geom_errorbar(aes(ymin=price.mean-se, ymax=price.mean+se), width=0.2, position="dodge")
+```
+
+
+## Time series
+
+To plot time series, we might have to change the format of our dataset. Have a look at the inbuilt dataset uspop:
+
+```{r}
+str(uspop)
+
+uspop
+```
+
+It is in a different format to the data we used so far. First we need to ensure that year and the values are both variables:
+
+```{r}
+uspop2 <- data.frame(Year = c(time(uspop)), Value = c(uspop))
+
+# this turns the time values of uspop into the variable Year, and the other values into variable Value, in the new dataset uspop2
+```
+
+Now we can use the data to plot the population over time:
+
+```{r}
+ggplot(data=uspop2, aes(x=Year, y=Value)) + geom_line()
+```
+
+We can also add points for each year in addition to the line:
+
+```{r}
+ggplot(data=uspop2, aes(x=Year, y=Value)) + geom_line() + geom_point()
+```
+
+
+## Facets
+
+One very useful feature of ggplot2 is the use of facets, where we split the data into subgroups, depending on a categorical variable, and make individual plots for each group. We can do this very easily by just adding a little bit of code. We will use our boxplot from earlier again to see how the facetting changes the plot:
+
+```{r}
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_boxplot()
+
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_boxplot() + facet_wrap(~cut)
+```
+
+```facet_wrap()``` can be arranged by specifying the number of rows or columns with ```nrow``` or ```ncol```:
+
+```{r}
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_boxplot() + facet_wrap(~cut, nrow=3)
+```
+
+
+```facet_grid()``` on the other hand always arranges the plots in a grid:
+
+```{r}
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_boxplot() + facet_grid(~cut)
+
+ggplot(data=diamonds, aes(x=color, y=price)) + geom_boxplot() + facet_grid(clarity~cut)
+```
+
+## A completely custom ggplot2 theme
+
+
+Now you know how to make plots in ggplot2 with the default settings, you can start to make customised plots by changing the theme. This will not change how the data are displayed, but how the plot itself looks. It is useful if you want all plots in your thesis to have the same look.
+
+
+Here is an example of a customised plot, with annotation for the code:
+
+```{r}
+ggplot(data=iris, aes(x=Sepal.Length, y=Petal.Length)) + geom_point() + facet_wrap(~Species)+
+scale_colour_gradient(low="green", high="blue", name="Petal width")+ 
+# this is similar to a plot we made earlier
+
+theme(text= element_text(size=14), 
+# this changes the font size to 14
+
+axis.text = element_text(angle=30, size = rel(0.8)),         
+# this changes the angle of the axis labels (often useful for bar plots), and makes the font slightly smaller than the rest of the plot
+
+axis.ticks = element_line(colour = "black"),
+
+plot.background = element_rect(fill="white"), 
+#this is the colour behind the plot
+
+panel.background = element_rect(fill = "mintcream"), 
+# this is the colour inside the plots
+
+panel.border = element_rect(fill = NA, colour = "black"),
+
+panel.grid.major = element_line(colour = "lightskyblue3", size = .1),
+
+panel.grid.minor = element_line(colour = "mintcream"), 
+
+# the minor grid lines - same colour as each panel
+
+strip.background = element_rect(fill = "lightskyblue2", colour = "black", size = 0.5))#this refers to the box with the heading above each facet
+```
+
+
+
+## Saving a plot
+
+Your plots will be saved in the folder that you set as your working directory. This line of code will save the last ggplot you made to a pdf:
+
+```{r, eval=FALSE}
+ggsave("plot.pdf")
+```
+
+Or you can save it as a jpg:
+
+```{r, eval=FALSE}
+ggsave("plot.jpg")
+```
+
+You can specify the size by adding dpi. You can also specify the exact width and height (in inches) which is useful for publications:
+
+```{r, eval=FALSE}
+ggsave("plot.pdf", dpi=300, width=5, height=5)
+```
+
+
+
+
+## Additional packages
+
+
+There are a lot of other packages in R now that add more functionality to ggplot2. Have a look at the ggplot2 extensions website (http://www.ggplot2-exts.org/gallery/) and see whether any of the packages might be useful for your own work. There are packages with more themes (for example ggthemes), a package for making animated graphs (gganimate), packages for plotting graph structures (for example ggraph) and so on.
+
+
