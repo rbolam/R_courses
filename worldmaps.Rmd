@@ -1,0 +1,67 @@
+---
+title: "How to make world maps in R"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+A short tutorial on plotting world maps in R.  
+
+## Install and load packages
+
+You will need rworldmap and ggplot2, which is part of the tidyverse package. We will plot some gapminder data, so will need that package too:
+
+```{r }
+library(rworldmap)
+library(tidyverse)
+library(gapminder)
+```
+
+## Load map data
+
+This function will give you the data for plotting each country:
+
+```{r }
+map.all <- map_data(map = "world")
+head(map.all) ## region denotes the country
+```
+
+## Get your own data in order
+
+Your data need to match the country names in `map.all`. This is probably what will take you longest to sort out, but we will use some good enough data today:
+
+
+```{r message = FALSE, warning = FALSE}
+
+head(gapminder) ## This is the gapminder dataset
+gapminder <- rename(gapminder, region = country) ## we need to rename column country to region, so we can merge gapminder and map.all
+```
+
+## Merge datasets
+
+Then merge the two dataframes `map.all` and `all`:
+```{r }
+map.all <- left_join(map.all, gapminder, by = "region") 
+head(map.all)
+
+```
+
+## Now you can make the plot:
+
+```{r}
+ggplot() + geom_map(data = map.all, map = map.all, 
+                    aes(map_id = region,             ## map_id is the variable name of the countries,
+                        x = long, y = lat, 
+                        fill = pop)) +               ## fill will colour in each country
+                                                     ## Use colour = varname to change colour of the outline
+  scale_fill_gradientn(colours=terrain.colors(5)) +  ## this will change the colours in the gradient
+  labs(fill = "Population size") +                   ## changes the name of the legend
+  theme_classic() +                                  ## change the overall look of the plot
+  theme(panel.background = element_rect(colour = "black", fill = "NA"), 
+        axis.ticks.length = unit(.05, "cm"), 
+        text = element_text(size = 16.5))            ## change some more of the defaults
+```
+
+
