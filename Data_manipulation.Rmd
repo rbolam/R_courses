@@ -123,12 +123,12 @@ goalsNA<-filter(squads, is.na(goals))
 
 summary(goalsNA$goals)
 ```
-  
+
 > Can you create a dataframe where the variable goals is never NA? You cna use the Data Transformation cheat sheet.  
 
 > In the wwc_outcomes dataframe, retain only observations where team is ENG (or another team of your choosing).
 
-> Can you also create a new dataframe with three different teams? You might need to use this operator: ```%in%``` 
+> Can you also create a new dataframe with three different teams? You might need to use this operator: ```%in%```
 
 
 ## 2. select()
@@ -184,69 +184,62 @@ In the ```wwc_outcomes dataframe```, we have the teams, but we might not know wh
 
 ```{r }
 head(codes)
-summary(state.area)
-summary(state.region)
+head(wwc_outcomes)
 
-## first we need to turn them into dataframes and stick some of them together
+## We might not know what all the team codes stand for:
+ggplot(wwc_outcomes, aes(x = team)) +
+  geom_bar() +
+  coord_flip()
 
+## but we have them stored in the codes dataframe that we read in at the start:
+wwc_outcomes_c <- left_join(wwc_outcomes, codes, by = "team")
 
-state2 <- bind_cols(data_frame(state.name, state.area)) #we stick these two together
-state3 <- bind_cols(data_frame(state.name, state.region))
+## Now we can see which teams played the most games:
+ggplot(wwc_outcomes_c, aes(x = country)) +
+  geom_bar() +
+  coord_flip()
 
-head(state2)
-head(state3)
-
-# Now we create some overlap between these two dataframes, to learn how join() works:
-
-state2 <- slice(state2, 1:30) #slice selects the rows 1 to 30 in this case
-state3 <- slice(state3, 21:50)
 
 ```
+
+The function ```left_join``` retains the dataframe that we specify first, and adds in values from the dataframe we specify next. There are different ```join``` functions and they do differnt things.
+
 
 Now we can make different dataframes with different functions. When I use these functions I check and double check what exactly each function does, as it can get a bit confusing:
 
 ```{r }
-state4 <- left_join(state2, state3, by = "state.name")
-# this will keep all the data in state2, and will add region from state3 to the states that appear in both dataframes. If the state is not in state3, the region will be NA
-str(state4)
-
-state5<-inner_join(state2, state3, by = "state.name")
-# this will only keep states that appear in both dataframes
-str(state5)
+all_countries <- right_join(wwc_outcomes, codes, by = "team")
+# right_join will keep all the data from codes, and add the data from wwc_outcomes in front of it
 
 ```
   
-> Can you join all of the data in state2 and state3 together, so you end up with 3 columns and 50 rows, and probably a few NAs?  
+
+> What does anti_join() do? Try it with wwc_outcomes and codes.  
   
-> What does anti_join() do? Try it with state2 and state3.  
-  
-I have used these functions loads to merge species level data, which is handy as species names are (supposedly) standardised!
+
 
 ## 5. Piping %>% and group_by()
 
-If we need to do a lot of data manipulation in a dataframe, we can use piping, with the piping operator ```%>%```. Have a look at this **shockingly untidy** example:
+If we need to do a lot of data manipulation in a dataframe, we can use piping, with the piping operator ```%>%```. Have a look at this **shockingly untidy** example from earlier:
 
 ```{r }
-starwars2 <- filter(starwars, !is.na(hair_color))
-starwars2 <- select(starwars2, -eye_color)
-starwars2 <- arrange(starwars2, -height)
-
-ggplot(starwars2, aes(x = hair_color, y = height)) +
-  geom_boxplot()
+finals <- filter(wwc_outcomes, round == "Final")
+finals <- select(finals, year, team, win_status)
+finals <- pivot_wider(finals, names_from = win_status, values_from = team)
 ```
 
 If we use piping, we can reduce the code and have less opportunities for misspellings etc. I have written the code below with pipes, but it does exactly the same as the code above:
 
 ```{r }
-starwars2 <- starwars %>%
-  filter(!is.na(hair_color)) %>% 
-  select(-eye_color) %>% 
-  arrange(-height)
-# rather than having to write starwars2 at the start of each bracket, we don't need to write it apart from the first part of the code
-# to save what we are doing, we need to start with dfnew <- df %>%, followed by whatever we are doing with the dataframe
+wwc_outcomes %>% 
+  filter(round == "Final") %>% 
+  select(year, team, win_status) %>% 
+  pivot_wider(names_from = win_status, values_from = team) ->
+  finals
 
-ggplot(starwars2, aes(x = hair_color, y = height)) +
-  geom_boxplot()
+# rather than having to write wwc_outcomes at the start of each bracket, we don't need to write it apart from the first part of the code
+# to save what we are doing, we need to end the code with ->, followed by the name of the new dataframe on the next line
+
 ```
   
 > Compare the code with and witout pipe closely, so you understand how to structure the pipe.  
@@ -254,12 +247,12 @@ ggplot(starwars2, aes(x = hair_color, y = height)) +
 
 Have a look at this code:
 ```{r }
-starwars3 <- filter(starwars, eye_color == "brown")
-starwars3 <- select(starwars3, -birth_year)
-starwars3 <- sample_n(starwars3, 100, replace = TRUE)
+wwc_outcomes2 <- filter(wwc_outcomes, round == "Group")
+wwc_outcomes3 <- select(wwc_outcomes2, team, score, win_status)
+wwc_outcomes4 <- sample_n(wwc_outcomes3, 20)
 ```
   
-  > Can you turn the above horrible code into a nice pipe? Hint: the keyboard shortcut for the pipe operator is Ctrl + Shift + M
+> Can you turn the above horrible code into a nice pipe? Hint: the keyboard shortcut for the pipe operator is Ctrl + Shift + M
 
 
 
@@ -268,42 +261,43 @@ starwars3 <- sample_n(starwars3, 100, replace = TRUE)
 We can use ```mutate()``` to calculate new variables, based on others we already have:
 
 ```{r}
-starwars <- mutate(starwars, mph = mass / height)
-# the new variable is called mph
+squads <- mutate(squads, gpc = goals / caps)
+# the new variable is called gpc. Caps were the number of international games played
 
-ggplot(starwars, aes(x = species, y = mph)) +
-  geom_boxplot() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+squads %>% 
+  filter(gpc > 0.5) %>% 
+  ggplot(aes(x = player, y = gpc)) +
+  geom_col() +
+  coord_flip()
 ```
-
 
 
 ```mutate()``` can also change variables according to conditions we set:
 
 ```{r}
-str(starwars[,1:10])
-starwars<-mutate_if(starwars, is.character, as.factor)
-str(starwars[,1:10])
-# this will turn all variables that are factors into characters, or vice versa:
+str(squads)
+squads <- mutate_if(squads, is.factor, as.character)
+str(squads)
+
 
 ```
 
-  
-> Change the variable homeworld into a factor.  
 
-
-We can also easily group observations with piping, and calculate summary statistics:
+We can also group observations with piping, and calculate summary statistics:
 ```{r }
-starwars %>%
-  group_by(species) %>%
-  summarise(meanh = mean(height))
+squads %>%
+  group_by(country) %>%
+  summarise(all_goals = sum(goals)) %>% 
+  filter(all_goals > 200)
 ```
 
   
-  > Can you calculate the median mass by homeworld?  
+> Can you calculate the number of games each team played, in wwc_outcomes?  
+
+
 
 And this is the end of our first tutorial! **WELL DONE YOU MADE IT THROUGH!**  
 
-We haven't run these tutorials before so it would be great to get any feedback you might have.
+
 
 
