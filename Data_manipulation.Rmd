@@ -89,44 +89,45 @@ One of the simplest and most useful functions is ```filter()```.
 
 ```{r }
 
-ggplot(data = wwc_outcomes, aes(x = team, y = win_status)) +
-  geom_bar()  # makes a histogram with ggplot, 
+ggplot(data = squads, aes(x = player, y = goals)) +
+  geom_col() +
+  coord_flip()  # Makes a bar plot with ggplot, but we can't see anything in there are there are so many players!
 
-tall <- filter(starwars, height > 180) 
-# this creates a new dataframe called tall, which are all values from dataframe starwars where height is above 180
+goals30 <- filter(squads, goals > 30) 
+# this creates a new dataframe called goals30, which are all rows from dataframe squads where variable goals is above 30
 
-ggplot(data = tall, aes(x = height)) +
-  geom_histogram(binwidth = 10)
+ggplot(data = goals30, aes(x = player, y = goals)) +
+  geom_col() +
+  coord_flip()
 
 ```
   
-> Exercise: Create a dataframe where all heights are below 150, and check it worked using ```ggplot()```  
+> Exercise: Create a dataframe from squads where all caps are above 150, and check it worked using ```ggplot()```  
 
 We can also look for exact values. Sometimes you need to use ```=```, sometimes ```==```:
 
 ```{r }
-height180 <- filter(starwars, height == 180)  
-# use == for numbers and = for characters/factors
-summary(height180$height)
+filter(wwc_outcomes, score == 13)
+## In this case, we will see the output straight away, rather than saving it in a separate dataframe. This is useful if we want to look into our data a bit
 ```
 
-The structure for NA values is slightly different (```x = NA``` doesn't work):
+The structure for NA values is slightly different (```x == NA``` doesn't work):
 
 ```{r }
-summary(factor(starwars$hair_color))
-# hair_color contains 5 rows with NA values
+summary(squads$goals)
+# goals contains 32 rows with NA values
 
-hairNA<-filter(starwars, is.na(hair_color))
-# In this case we keep those rows where hair_color is NA
+goalsNA<-filter(squads, is.na(goals))
+# In this case we keep those rows where goals is NA
 
-summary(factor(hairNA$hair_color))
+summary(goalsNA$goals)
 ```
   
-> Can you create a dataframe where the variable hair_color is never NA? The cheat sheet might help.  
+> Can you create a dataframe where the variable goals is never NA? You cna use the Data Transformation cheat sheet.  
 
-> In the starwars dataframe, retain only observations where eye_color is red.  
+> In the wwc_outcomes dataframe, retain only observations where team is ENG (or another team of your choosing).
 
-> Can you also create a new dataframe with three colours? You might need to use this operator: ```%in%``` 
+> Can you also create a new dataframe with three different teams? You might need to use this operator: ```%in%``` 
 
 
 ## 2. select()
@@ -134,23 +135,23 @@ summary(factor(hairNA$hair_color))
 The ```select()``` function can be used to include or exclude columns from the dataframe:
 
 ```{r }
-str(starwars[,1:10])
+str(wwc_outcomes)
 
-sw2 <- select(starwars, -height) 
-# this will make a new dataframe, without the variable height
+wwc_outcomes2 <- select(wwc_outcomes, -team_num) 
+# this will make a new dataframe, without the variable team_num
 
-str(sw2[,1:9])
+str(wwc_outcomes2)
 
-sw3 <- select(starwars, homeworld, species) 
-# this will make a new dataframe, with only the variables homeworld and species
-
-str(sw3)
+wwc_outcomes3 <- select(wwc_outcomes2, year, team) 
+str(wwc_outcomes3)
+# this will make a new dataframe, with only the variables team and win_status. Check the number of observations
+wwc_outcomes3 <- distinct(wwc_outcomes3) ## this step will remove all duplicate values, so we can see which team played in which year
 
 ```
   
-> Using starwars, create a new dataframe where all variables start with h.  
+> Using wwc_outcomes, create a new dataframe where all variables start with t (use the cheatsheet).  
 
-There are lots of other ways of using ```filter()``` and ```select()```, all listed on the cheat sheet.
+There are lots of other ways of using ```filter()``` and ```select()```, all listed on the cheat sheets.
 
 ## 3. Reshaping data
 
