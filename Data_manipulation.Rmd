@@ -14,9 +14,13 @@ Today we will learn some useful data manipulation functions in R. A lot of this 
 
 ### Resources
 
-There is a useful cheat sheet, which you might want to have open for the whole session, available at https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf  
+There are some useful cheat sheets available at https://rstudio.com/resources/cheatsheets/:
+- Data Import Cheat Sheet
+- Data Transformation Cheat Sheet
+- Factors with forcats Cheat Sheet  
 
-And of course this book on R for data science is useful too: http://r4ds.had.co.nz/   
+
+And this book on R for data science is useful too: http://r4ds.had.co.nz/   
 
 ### Outline
 
@@ -26,42 +30,56 @@ Here is a list of things we will learn today:
 2. Selecting variables using ```select()```  
 3. Changing data from wide to long format and vice versa, using ```gather()``` and ```spread()```  
 4. Merging different dataframes together with the ```bind()``` and ```join()``` functions  
-5. Using the pipe operator ```%>%``` to write tidy code and group observation with ```group_by()```  
+5. Using the pipe operator ```%>%``` to write tidy code and group observations with ```group_by()```  
 6. Calculating new variables with ```mutate()``` and ```summarise()```  
+7. Reordering factor levels for nicer plots  
 
 ### How we will work today
 
-There are lots of functions in different packages, and altogether they are called tidyverse. The two packages we will use today are dplyr and tidyr, but you can download all of them in one go too. we will not use every single function, or different way of using them, but instead focus on the main ones that will hopefully come in handy!  
+There are lots of functions in different packages, and altogether they are called tidyverse. The tidyverse packages we will use today are dplyr, tidyr, and forcats, but you can download all of them in one go using ```install.packages("tidyverse")```. We will not use every single function, or different way of using them, but instead focus on the main ones that will hopefully come in handy!  
 
 I have not included the output of the code here, so you will have to run it yourself :)  
 
 > There will be some exercises, indicated by the line on the left, so you can get some practice in.  
 
 
-**PLEASE DO NOT TRY TO DOWNLOAD ALL TIDYVERSE PACKAGES AS IT MIGHT TAKE A LONG LONG TIME, SO STICK TO DPLYR, TIDYR AND GGPLOT FOR NOW!!!**
-
 
 ```{r, eval = FALSE}
-install.packages("dplyr", "tidyr", "ggplot2")
-library(dplyr, tidyr, ggplot2)
+library(tidyverse)
 ```
 
-We will use different dataframes that are built into R. I usually look at the data to start with, mainly using ```str()```, ```summary()``` or ```head()```. To understand what every function does, it might be helpful to run these before and after you have made changes to the data!
+We will load in some data first. As it was International Women's Day on Sunday, we will use data from the Women's Football World Cups. For a description of the variables see https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-07-09.  
 
-We will start using the dataframe ```starwars```.
+This is how to read in the data from github:
 
 ```{r }
-str(starwars[,1:10]) # to avoid seeing the lengthy film output every time, you can use this instead of str(starwars)
-summary(starwars)
-head(starwars)
+wwc_outcomes <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/wwc_outcomes.csv")
+squads <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/squads.csv")
+codes <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/codes.csv")
+
 ```
+
+I usually look at the data to start with, mainly using ```str()```, ```summary()``` or ```head()```. To understand what every function does, it might be helpful to run these before and after you have made changes to the data!
+
+We will start using the dataframe ```wwc_outcomes```.
+
+```{r }
+str(wwc_outcomes)
+summary(wwc_outcomes)
+head(wwc_outcomes)
+```
+
+> Use the above functions to look at the dataframes ```squads``` and ```codes``` too.   
+
 The functions follow the normal form in R, for example, we can change column names using ```rename()```:
 
 ```{r }
-starwarsm <- rename(starwars, mass_in_kg = mass)
+wwc_outcomes2 <- rename(wwc_outcomes, gameID = yearly_game_id)
 ```
-  
-  > What do the functions ```distinct()``` and ```arrange()``` do?
+
+This can be useful when we read in other people's data with long column names, for example.  
+
+> What do the functions ```distinct()``` and ```arrange()``` do? Have a look on the data transformation cheat sheet.
 
 ## 1. filter()
 
@@ -71,8 +89,8 @@ One of the simplest and most useful functions is ```filter()```.
 
 ```{r }
 
-ggplot(data = starwars, aes(x = height)) +
-  geom_histogram(binwidth = 10)  # makes a histogram with ggplot, which we will learn about in another session
+ggplot(data = wwc_outcomes, aes(x = team, y = win_status)) +
+  geom_bar()  # makes a histogram with ggplot, 
 
 tall <- filter(starwars, height > 180) 
 # this creates a new dataframe called tall, which are all values from dataframe starwars where height is above 180
