@@ -1,8 +1,9 @@
 ---
 title: "Tidyverse"
 output:
-  html_document: default
   word_document: default
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -28,7 +29,7 @@ Here is a list of things we will learn today:
 
 1. Filtering observations using ```filter()```  
 2. Selecting variables using ```select()```  
-3. Changing data from wide to long format and vice versa, using ```gather()``` and ```spread()```  
+3. Changing data from wide to long format and vice versa, using ```pivot_longer()``` and ```pivot_wider()```  
 4. Merging different dataframes together with the ```bind()``` and ```join()``` functions  
 5. Using the pipe operator ```%>%``` to write tidy code and group observations with ```group_by()```  
 6. Calculating new variables with ```mutate()``` and ```summarise()```  
@@ -161,16 +162,16 @@ We can use tidyverse for reshaping data. As an example, we will extract the team
 ```{r }
 finals <- filter(wwc_outcomes, round == "Final")
 finals <- select(finals, year, team, win_status)
-finals <- pivot_wider(finals, names_from = win_status, values_from = team)
-finals
+finals_wide <- pivot_wider(finals, names_from = win_status, values_from = team)
+finals_wide
 
 ## Let's have a look who won most during the finals:
-ggplot(finals, aes(x = Won)) +
+ggplot(finals_wide, aes(x = Won)) +
   geom_bar()
 ```
 
 
-> Can you reverse what you did, and put the data back into the original format? Use the function ```pivot_longer()```.  
+> Can you reverse what you did, and put the data back into the original format? Call the dataframe finals_long and use the function ```pivot_longer()```.  
 
 
 ## 4. Merging dataframes
@@ -295,6 +296,46 @@ squads %>%
 > Can you calculate the number of games each team played, in wwc_outcomes?  
 
 
+
+## 7. Reordering factors
+
+R orders factors alphabetically. Often we do not want to display bar plots in tjhis way, but by a frequency or another value. For example, we made the following plot earlier:
+
+```{r }
+squads %>% 
+  filter(gpc > 0.5) %>% 
+  ggplot(aes(x = player, y = gpc)) +
+  geom_col() +
+  coord_flip()
+## in reverse alphabetical order, because we used coord_flip()
+```
+
+We want to order the plot by gpc really. This is where ```fct_reorder()``` comes in:
+
+```{r }
+squads %>% 
+  filter(gpc > 0.5) %>% 
+  ggplot(aes(x = fct_reorder(player, gpc), y = gpc)) +
+  geom_col() +
+  coord_flip()
+## in reverse alphabetical order, because we used coord_flip()
+```
+
+> Can you reverse the order, so the highest gpc is at the bottom? Use the Factors with forcats Cheat Sheet.
+
+
+Sometimes we might want to order by the frequency, particularly for barplots. Another plot we made earlier:
+```{r }
+ggplot(finals_wide, aes(x = Won)) +
+  geom_bar()
+```
+
+We can use the ```fct_infreq()``` function to reorder:
+
+```{r }
+ggplot(finals_wide, aes(x = fct_infreq(Won))) +
+  geom_bar()
+```
 
 And this is the end of our first tutorial! **WELL DONE YOU MADE IT THROUGH!**  
 
