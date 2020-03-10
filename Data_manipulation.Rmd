@@ -53,9 +53,9 @@ We will load in some data first. As it was International Women's Day on Sunday, 
 This is how to read in the data from github:
 
 ```{r }
-wwc_outcomes <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/wwc_outcomes.csv")
-squads <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/squads.csv")
-codes <- read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/codes.csv")
+wwc_outcomes <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/wwc_outcomes.csv")
+squads <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/squads.csv")
+codes <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/codes.csv")
 
 ```
 
@@ -75,6 +75,7 @@ The functions follow the normal form in R, for example, we can change column nam
 
 ```{r }
 wwc_outcomes2 <- rename(wwc_outcomes, gameID = yearly_game_id)
+head(wwc_outcomes2)
 ```
 
 This can be useful when we read in other people's data with long column names, for example.  
@@ -155,34 +156,34 @@ There are lots of other ways of using ```filter()``` and ```select()```, all lis
 
 ## 3. Reshaping data
 
-We can use tidyverse for reshaping data. As an example, look at table4b in the tidyr package. The values underneath 1999 and 2000 refer to a population:
+We can use tidyverse for reshaping data. As an example, we will extract the teams who made it into the finals each year, and create columns that specficy who won and who lost:
 
 ```{r }
-table4b
+finals <- filter(wwc_outcomes, round == "Final")
+finals <- select(finals, year, team, win_status)
+finals <- pivot_wider(finals, names_from = win_status, values_from = team)
+finals
+
+## Let's have a look who won most during the finals:
+ggplot(finals, aes(x = Won)) +
+  geom_bar()
 ```
 
-We might not want each year as a column heading in our dataframe, but have both years in a new column called year. We would also need another new variable, which would list the values currently in 1999 and 2000, we will call it population:
 
-```{r }
-table4bnew <- gather(table4b, "year", "population", 2:3)
-table4bnew
-```
-  
-> Can you reverse what you did, and put the data back into the original format? Use the function ```spread()```.  
+> Can you reverse what you did, and put the data back into the original format? Use the function ```pivot_longer()```.  
 
-> In the starswars dataframe, can you combine hair_color, skin_color and eye_color into two new variables: typeofcol and col (or whatever names you can think of)?  
 
 ## 4. Merging dataframes
 
-tidyverse has the functions ```bind_cols()``` and ```bind_rows()``` which are similar to cbind and rbind. They do as they say - they bind rows or columns of dataframes together.
+tidyverse has the function ```bind_rows()``` which is similar to rbind. It does as it says - binding rows of dataframes together. The key thing is that the column headings should be the same in both dataframes.
 
 It is also possible to merge two dataframes based on one or more columns.
 
-First we need to create two dataframes that have some overlapping values in the same column, using state.name, state.area and state.region:
+In the ```wwc_outcomes dataframe```, we have the teams, but we might not know what all the short versions mean. However, they are stored in ```codes```:
 
 
 ```{r }
-head(state.name)
+head(codes)
 summary(state.area)
 summary(state.region)
 
