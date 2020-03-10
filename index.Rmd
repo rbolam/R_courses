@@ -1,8 +1,8 @@
 ---
 title: "Tidyverse"
 output:
-  word_document: default
   html_document: default
+  word_document: default
   pdf_document: default
 ---
 
@@ -15,10 +15,10 @@ Today we will learn some useful data manipulation functions in R. A lot of this 
 
 ### Resources
 
-There are some useful cheat sheets available at https://rstudio.com/resources/cheatsheets/:
-- Data Import Cheat Sheet
-- Data Transformation Cheat Sheet
-- Factors with forcats Cheat Sheet  
+There are some useful cheat sheets available at https://rstudio.com/resources/cheatsheets/:  
+* Data Import Cheat Sheet
+* Data Transformation Cheat Sheet
+* Factors with forcats Cheat Sheet  
 
 
 And this book on R for data science is useful too: http://r4ds.had.co.nz/   
@@ -41,7 +41,7 @@ There are lots of functions in different packages, and altogether they are calle
 
 I have not included the output of the code here, so you will have to run it yourself :)  
 
-> There will be some exercises, indicated by the line on the left, so you can get some practice in.  
+> There will be some exercises, formatted like this, so you can get some practice in.  
 
 
 
@@ -79,7 +79,7 @@ wwc_outcomes2 <- rename(wwc_outcomes, gameID = yearly_game_id)
 head(wwc_outcomes2)
 ```
 
-This can be useful when we read in other people's data with long column names, for example.  
+This can be useful when we read in data with long, complicated column names, for example.  
 
 > What do the functions ```distinct()``` and ```arrange()``` do? Have a look on the data transformation cheat sheet.
 
@@ -93,7 +93,7 @@ One of the simplest and most useful functions is ```filter()```.
 
 ggplot(data = squads, aes(x = player, y = goals)) +
   geom_col() +
-  coord_flip()  # Makes a bar plot with ggplot, but we can't see anything in there are there are so many players!
+  coord_flip()  # Makes a bar plot with ggplot, but we can't see anything in there as there are so many players!
 
 goals30 <- filter(squads, goals > 30) 
 # this creates a new dataframe called goals30, which are all rows from dataframe squads where variable goals is above 30
@@ -106,7 +106,7 @@ ggplot(data = goals30, aes(x = player, y = goals)) +
   
 > Exercise: Create a dataframe from squads where all caps are above 150, and check it worked using ```ggplot()```  
 
-We can also look for exact values. Sometimes you need to use ```=```, sometimes ```==```:
+We can also look for exact values:
 
 ```{r }
 filter(wwc_outcomes, score == 13)
@@ -119,7 +119,7 @@ The structure for NA values is slightly different (```x == NA``` doesn't work):
 summary(squads$goals)
 # goals contains 32 rows with NA values
 
-goalsNA<-filter(squads, is.na(goals))
+goalsNA <- filter(squads, is.na(goals))
 # In this case we keep those rows where goals is NA
 
 summary(goalsNA$goals)
@@ -180,7 +180,7 @@ tidyverse has the function ```bind_rows()``` which is similar to rbind. It does 
 
 It is also possible to merge two dataframes based on one or more columns.
 
-In the ```wwc_outcomes dataframe```, we have the teams, but we might not know what all the short versions mean. However, they are stored in ```codes```:
+In the ```wwc_outcomes``` dataframe, we have the teams, but we might not know what all the short versions mean. However, they are stored in the ```codes``` dataframe:
 
 
 ```{r }
@@ -203,10 +203,7 @@ ggplot(wwc_outcomes_c, aes(x = country)) +
 
 ```
 
-The function ```left_join``` retains the dataframe that we specify first, and adds in values from the dataframe we specify next. There are different ```join``` functions and they do differnt things.
-
-
-Now we can make different dataframes with different functions. When I use these functions I check and double check what exactly each function does, as it can get a bit confusing:
+The function ```left_join()``` retains the dataframe that we specify first, and adds in values from the dataframe we specify next. There are different ```join()``` functions and they do differnt things. When I use these functions I check and double check what exactly each function does, as it can get a bit confusing:
 
 ```{r }
 all_countries <- right_join(wwc_outcomes, codes, by = "team")
@@ -299,7 +296,7 @@ squads %>%
 
 ## 7. Reordering factors
 
-R orders factors alphabetically. Often we do not want to display bar plots in tjhis way, but by a frequency or another value. For example, we made the following plot earlier:
+R orders factors alphabetically. Often we do not want to display bar plots in this way, but by a frequency or another value. For example, we made the following plot earlier:
 
 ```{r }
 squads %>% 
@@ -310,7 +307,7 @@ squads %>%
 ## in reverse alphabetical order, because we used coord_flip()
 ```
 
-We want to order the plot by gpc really. This is where ```fct_reorder()``` comes in:
+We want to order the plot by gpc really. This is where ```fct_reorder()``` comes in, which we can use within the ```ggplot()``` function:
 
 ```{r }
 squads %>% 
@@ -318,7 +315,6 @@ squads %>%
   ggplot(aes(x = fct_reorder(player, gpc), y = gpc)) +
   geom_col() +
   coord_flip()
-## in reverse alphabetical order, because we used coord_flip()
 ```
 
 > Can you reverse the order, so the highest gpc is at the bottom? Use the Factors with forcats Cheat Sheet.
