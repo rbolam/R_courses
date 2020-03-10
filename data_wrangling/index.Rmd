@@ -333,8 +333,29 @@ ggplot(finals_wide, aes(x = fct_infreq(Won))) +
   geom_bar()
 ```
 
-And this is the end of our first tutorial! **WELL DONE YOU MADE IT THROUGH!**  
+## 8. A bit more on factors
+
+Sometimes we want to change the names of a factor, because they are too long, or are incorrect. We can check and change individual factor levels like this:
+
+```{r }
+levels(wwc_outcomes$win_status)
+levels(wwc_outcomes$win_status) <- c("Lost", "Tie", "Winners YAAAY")
+levels(wwc_outcomes$win_status)[levels(wwc_outcomes$win_status) == "Lost"] <- "Losers :(" 
+## this just changes one factor level
+```
+
+If we want to display factor levels over 2 lines because they are so long, we can change them in this way using ```\n```:
+
+```{r }
+ggplot(data = goals30, aes(x = fct_reorder(player, goals), y = goals)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "Player", y = "Goals")
 
 
+levels(goals30$player)[levels(goals30$player) == "Madeleine Ngono Mani"]<-"Madeleine\nNgono Mani"
 
-
+ggplot(data = goals30, aes(x = fct_reorder(player, goals), y = goals)) +
+  geom_col() +
+  coord_flip()
+```
