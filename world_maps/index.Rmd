@@ -1,5 +1,7 @@
 ---
 title: "How to make world maps in R"
+author: "By Rike Bolam"
+date: "Last updated 14/07/2020"
 output: html_document
 ---
 
