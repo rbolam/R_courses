@@ -1,8 +1,8 @@
 ---
-title: "Data visualisation handout"
+title: "Data visualisation using ggplot2"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 
