@@ -1,5 +1,5 @@
 ---
-title: "Beginner session in R"
+title: "Introduction to R"
 output:
   html_document: default
   pdf_document: default
@@ -134,63 +134,18 @@ w <- list(name="Fred", mynumbers = a1, mymatrix = y, age = 5.3)
 str(w)
 ```
 
-## Set working directory 
+## Using data in R
 
-If you want to import an excel file with your data in, rather than typing it in by hand you need to tell R which folder contains your file. You do this by setting the working directory. But before you do this you need to create a new folder and download and save the example data file in this new folder.  
-
-
-First of all create a new folder called `>come_up_with_a_witty_name<` on your laptop. 
-
-
-There are two different ways to set the working directory: 
-
-
-1. Use the main menu to navigate to the right folder  
-
-On the RStudio main menu click on: 
-
-`Session > Set Working Directory > Choose Directory`   
-
-Navigate to the Rsession folder you have just created and click once on the folder so its highlighted in blue, then click on the `Select folder` button.   
-
-You can check you have the right folder set as your working directory:  
-
-```{r, eval = FALSE}
-getwd()
-```
-
-
-You should see:`>my_file_path<`
-
-
-2. You can tell R to set the working directory using the function `setwd()`
-
-
-On the top left hand window (in your R script) type: 
-
-```{r, eval = FALSE}
-setwd(>my_file_path<)
-```
-
-
-Be aware that you need to type the exact file path otherwise R won't be able to understand it.  
-
-If you want to know the file path you can also go to windows explorer, find your folder and click once on the file path bar on the top of the window and it will show the file path. Just be careful: if you copy this, you need to change the backslashes `\` to forward slashes `/`.
-
-
-### Read in data 
-
-
-Note: R likes using .csv files rather than normal excel spreadsheets (.xlsx files). So please save the files you want to import into R as .csv files.
-
-Also make sure they are tidy - e.g. data in two columns with no gaps in between, no random plots, random bits of writing etc., otherwise R won't know how to interpret it. 
-
-
-We will practice loading data into R now. Copy the following file into Excel:
+We will use data that is saved online to get started:
 
 
 ```{r, echo = F}
-p <- head(iris, 10)
+
+remotes::install_github("allisonhorst/palmerpenguins")
+library(palmerpenguins)
+data(package = 'palmerpenguins')
+
+p <- head(penguins, 10)
 kable(p)
 ```
 
@@ -220,28 +175,33 @@ write.csv(my_data, ">somethingelse<.csv")
 Apart from the `str()` function, there are some other functions we can use to get an initial idea of our data. We can use `summary()` for the whole dataset. For continuous variables, this will show the minimum and maximum value, the quartiles and the mean. For categorical variables, it will show the different categories and a count of each one. We will use a built-in dataset called iris:
 
 ```{r}
-summary(iris)
+summary(penguins)
 ```
 
 
 We can also get the summary for just one variable. We need to tell R in which dataset to look for it, and then add the column name after a dollar sign:
 
 ```{r}
-summary(iris$Sepal.Length)
+summary(penguins$flipper_length_mm)
 ```
 
 This also works for other functions, such as `mean`:
 ```{r}
-mean(iris$Sepal.Length)
+mean(penguins$flipper_length_mm)
 ```
 
+It isn't working! That's because some of the values are NA. We can specify to ignore the NA values like this: 
+
+```{r}
+mean(penguins$flipper_length_mm, na.rm = TRUE)
+```
 
 To get a better idea of your dataset, you can also use the `head` function, which will show the first 6 rows of the dataset, unless otherwise specified in the code:
 
 ```{r}
-head(iris)
+head(penguins)
 
-head(iris, 10) 
+head(penguins, 10) 
 # this will show the first 10 rows
 ```
 
@@ -249,9 +209,9 @@ head(iris, 10)
 The same works for the last 6 rows with the tail function:
 
 ```{r}
-tail(iris)
+tail(penguins)
 
-tail(iris, 10)
+tail(penguins, 10)
 ```
 
 
@@ -261,18 +221,18 @@ tail(iris, 10)
 If variables are not in the right format, it can mess up our analysis or our plots, as R deals differently with different types of variables. Sometimes R does not read the variables in the right way, or we need to change the variable type for some reason. Once we have checked whether our variables are in the correct format, we can change those that are not:
 
 ```{r}
-iris$Species<-as.character(iris$Species)
+penguins$species <- as.character(penguins$species)
 
 # we can check what type of variable we have in different ways:
-str(iris$Species)
-is.character(iris$Species)
+str(penguins$species)
+is.character(penguins$species)
 ```
 
 
 In this case, species should really be a factor, so we will change it back to that:
 
 ```{r}
-iris$Species<-as.factor(iris$Species)
+penguins$species <- as.factor(penguins$species)
 ```
 
 
@@ -306,29 +266,29 @@ To find out about all the different functions in a package, you can usually find
 `filter` will retain or remove rows in your dataset, according to conditions you set:
 
 ```{r}
-temphigh <- filter(airquality, Temp > 79) 
-# this creates a new dataset called temphigh, which are all values from dataset airquality where temperature is above 79
+bill_long <- filter(penguins, bill_length_mm > 44) 
+# this creates a new dataset called bill_long, which are all values from dataset penguins where bill length is above 44
 
-templow <- filter(airquality, Temp <= 79) 
-# this creates a new dataset called temphigh, which are all values from dataset airquality where temperature is below or at 79
+bill_short <- filter(penguins, bill_length_mm <= 44) 
+# this creates a new dataset called bill_short, which are all values from dataset penguins where bill length is at or below 44
 ```
 
-Have a look how many observations there are in airquality, temphigh and templow.  
+Have a look how many observations there are in penguins, bill_long and bill_short.  
 
 We can also examine rows that contain NA values, or exclude rows that contain NA values. The structure is slightly different when it comes to including or excluding NAs:  
 ```{r}
-summary(airquality) 
-# Ozone contains 37 rows with NA values
+summary(penguins) 
+# flipper_length_mm contains 2 rows with NA values
  
-airqualityNA <- filter(airquality, is.na(Ozone)) 
+flipper_length_na <- filter(penguins, is.na(flipper_length_mm)) 
 # In this case we keep those rows where Ozone is NA
 
-summary(airqualityNA)
+flipper_length_na
 
-airqualitynoNA <- filter(airquality, !is.na(Ozone)) 
-# Often we might want to remove NAs from our dataset, not keep them - we do this by adding ! in front of is.na. Here we keep rows if Ozone is not NA
+flipper_length_no_na <- filter(penguins, !is.na(flipper_length_mm)) 
+# Often we might want to remove NAs from our dataset, not keep them - we do this by adding ! in front of is.na. Here we keep rows if flipper_length_mm is not NA
 
-summary(airqualitynoNA)
+summary(flipper_length_no_na)
 ```
 
 Have a look at the different datasets, and make sure R is doing what you think it is doing.  
@@ -336,24 +296,60 @@ Have a look at the different datasets, and make sure R is doing what you think i
 The select function can be used to include or exclude columns from the dataset:
 
 ```{r}
-airquality2 <- select(airquality, -Ozone) 
-# this will make a new dataset called airquality2, based on airquality, without the variable Ozone
+penguins2 <- select(penguins, -island) 
+# this will make a new dataset called penguins2, based on penguins, without the variable island
 
-str(airquality2)
+str(penguins2)
 
-airquality3 <- select(airquality, Ozone, Solar.R) 
-# this will make a new dataset called airquality3, based on airquality, with only the variables Ozone and Solar.R
+penguins3 <- select(penguins, species, island) 
+# this will make a new dataset called penguins3, based on penguins, with only the variables species and island
 
-str(airquality3)
+str(penguins3)
 ```
 
 Again, examine the different datasets, and check that R is doing what you think it is doing.
+
+
+
+## Getting started with loading in your own data 
+
+If you want to import an excel file with your data in, you should set up a project that contains all your files: a folder with the data, a folder with scripts, and a folder where you save outputs such as figures. Follow these instructions once you are ready to set up your own project.
+
+In RStudio, under Edit at the top menu, click on the R+ icon which will create a new project.  
+
+New Directory > New Project. Now enter the name you want to give your project (give names that actually mean something - not Project01!), and specify where you want to save your project.  
+
+
+Now your new project will open. Once it is open, click on the icon under File (at the top) and select R script - you can type and save your code in the script now.
+
+
+### Reading in and saving data 
+
+
+Note: R likes using .csv files rather than normal excel spreadsheets (.xlsx files). So please save the files you want to import into R as .csv files.
+
+Also make sure they are tidy - e.g. data in two columns with no gaps in between, no random plots, random bits of writing etc., otherwise R won't know how to interpret it. 
+
+On your computer in your project folder, create a new folder called data, and save your data file in that folder. You can now read in your data like this:
+
+```{r, eval = FALSE}
+name_your_file <- read.csv("data/YOURFILENAMEHERE.csv")
+```
+
+
+In a similar way, you can also save data files, once you have tidied them in R:
+
+```{r, eval = FALSE}
+write.csv(penguins3, "data/penguin_data.csv")
+```
 
 ## Saving R files
 
 It is important to save your code - if you find a mistake in your dataset, or you need to run some analysis again, it will be much quicker to do if you have your code saved.  
 
-To save your R script, go to `File > Save as...` and then find the folder that you want to save your script in. 
+To save your R script, go to `File > Save`.  
+
+When you quit R, you do not need to save your work space image!!!
 
 ## Tidy code
 
