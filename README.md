@@ -8,11 +8,11 @@ This is an introductory course for beginners - learn some basic things that you 
 
 
 ## [Data wrangling](https://rbolam.github.io/R_courses/data_wrangling/)
-This is an introductory course into data manipulation in R, using the dplyr, tidyr and forcats packages from the tidyverse.  
+This is an introductory course on data wrangling in R, using the dplyr, tidyr and forcats packages from the tidyverse, based on data from the Women’s Football World Cups.
 
 
 ## [Data visualisation](https://rbolam.github.io/R_courses/data_visualisation/)
-This course will teach you some introductory skills to making plots with the ggplot2 package from the tidyverse.  
+This course will teach you to code plots with the ggplot2 package from the tidyverse.  Learn how to make different types of plots such as bar plots, boxplots, or density plots, making subplots, and how to animate your plots.
 
 
 ## [World maps](https://rbolam.github.io/R_courses/world_maps/)
