@@ -1,6 +1,11 @@
 # R courses
 
-This repository contains some courses on learning new skills in R. They all assume some basic familiarity with R.  
+This repository contains some courses on learning new skills in R.  
+
+
+## [Introduction to R](https://rbolam.github.io/R_courses/introduction_to_R)
+This is an introductory course for complete beginners.  
+
 
 ## [Data wrangling](https://rbolam.github.io/R_courses/data_wrangling/)
 This is an introductory course into data manipulation in R, using the dplyr, tidyr and forcats packages from the tidyverse.  
