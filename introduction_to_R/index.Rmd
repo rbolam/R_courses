@@ -1,0 +1,451 @@
+---
+title: "Beginner session in R"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+## Aim of the workshop
+
+The aim of this session is to give you an overview of R, how the basics work, such as understanding different R objects, how to read in data, what different packages are and how to install them.  
+- What is R and RStudio
+- What are functions
+- Different objects in R
+- What are packages
+- Tidy code
+- R help and resources
+
+
+## What is R?
+
+- R is free programming language for statistical analysis and data visualisation mainly
+- It's open source - anyone can add new functionality
+- You type in commands to do things, rather than point and click like in excel 
+- Because everyone can add new ways of doing stuff, there is often more than one way to do the same thing in R
+
+
+## What does R look like? 
+
+- There are 2 main programmes: `R` and `Rstudio`
+- `R` is the base programme
+- `RStudio` is more user-friendly, and therefore many people use it
+- When you start `Rstudio` the screen is divided into 4 blocks/windows, as we will explain
+
+R can be used as a calculator. Type in ```3 + 5```, or something like that, into the console.  
+
+
+## What are functions and packages?
+
+R uses functions, which do certain things to the information you pass to them. Functions are always followed by brackets. For example, type in ```sum(2, 8, 3)```. This function does what it says! To find out about a function, type in ```?>functionname<```, and a help file will show up.  
+
+It is possible to write your own functions in R. Many people who write their own functions will save them in what is called a package. This means you can install the package, and use their functions. This really extends the capabilities of R, and we will look at installing packages later in this session.
+
+
+## What are objects?
+
+You can also save the numbers we used in our calculation, for example ```no <- sum(2, 8, 3)```. Now type in ```no```.  
+
+In R, `<-` replaces `=`. While `=` works in some instances, it does weird things in others - best avoid it!
+
+These entities that we can create in R are called objects. They are stored in the R environment.  Have a look whether `no` appears in the window called `Environment`.
+
+
+## Naming objects
+
+R recognises each object by the name it is given, which can be made up of letters and numbers. For example: type in ```no + 3```.  R recognises `no` as the number 8.
+
+- **R is case-sensitive so fish and Fish are two different objects!** 
+- Few symbols are allowed apart from '_' and '.'
+- Avoid object names that are functions in R e.g. sum
+
+
+## Data types in R: Vectors
+
+A vector is a collection of different elements which can hold different types of data.
+
+*Numeric vector:*  
+```{r}
+a1 <- c(1, 2, 5.3, 6, -2, 4)
+a1
+str(a1)
+```
+
+Note that `c()` is a function. It tells R to expect a whole set of numbers, letters, or whatever you input.  
+
+`str()` is also a function. It gives the structure of our object, and is very useful to get an idea of what object we are working with.
+
+There are numeric vectors, as well as integers.  
+
+*Character vector:*  
+```{r}
+b1 <- c("one","two","three") 
+b1
+str(b1)
+```
+
+This is very similar, except this time you are inputting characters. It won't work without the inverted commas!
+
+*Logical vector:*  
+```{r}
+c1 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) 
+c1
+str(c1)
+```
+
+
+## Data types in R: Matrix
+
+A matrix is a vector with added dimensions - it must have columns and rows. All columns must have the same length and type of data, such as numeric, or characters. 
+
+```{r}
+y <- matrix(1:20, nrow = 5, ncol = 4)  
+# nrow and ncol determine the numbers of rows and columns 
+y
+str(y)
+
+s_means = matrix(c(-14, -15.1, -11.03, 3.06, 7.05, 13.72), ncol = 2, nrow = 3)
+s_means
+str(s_means)
+```
+
+## Data types in R: Dataframes
+
+They are more general than a matrix and can have columns with different data types. If you have your own data, this is probably what you will get once you read the file into R.
+
+```{r}
+dat <- data.frame(id = letters[1:3], x = 1:3, y = 4:6)
+dat
+str(dat)
+# Have a good look at the code above, and the output you get.
+```
+
+## Data types in R: List
+
+Lists are ordered collections of objects and they can have different modes in one list
+
+```{r}
+w <- list(name="Fred", mynumbers = a1, mymatrix = y, age = 5.3)
+str(w)
+```
+
+## Set working directory 
+
+If you want to import an excel file with your data in, rather than typing it in by hand you need to tell R which folder contains your file. You do this by setting the working directory. But before you do this you need to create a new folder and download and save the example data file in this new folder.  
+
+
+First of all create a new folder called `>come_up_with_a_witty_name<` on your laptop. 
+
+
+There are two different ways to set the working directory: 
+
+
+1. Use the main menu to navigate to the right folder  
+
+On the RStudio main menu click on: 
+
+`Session > Set Working Directory > Choose Directory`   
+
+Navigate to the Rsession folder you have just created and click once on the folder so its highlighted in blue, then click on the `Select folder` button.   
+
+You can check you have the right folder set as your working directory:  
+
+```{r, eval = FALSE}
+getwd()
+```
+
+
+You should see:`>my_file_path<`
+
+
+2. You can tell R to set the working directory using the function `setwd()`
+
+
+On the top left hand window (in your R script) type: 
+
+```{r, eval = FALSE}
+setwd(>my_file_path<)
+```
+
+
+Be aware that you need to type the exact file path otherwise R won't be able to understand it.  
+
+If you want to know the file path you can also go to windows explorer, find your folder and click once on the file path bar on the top of the window and it will show the file path. Just be careful: if you copy this, you need to change the backslashes `\` to forward slashes `/`.
+
+
+### Read in data 
+
+
+Note: R likes using .csv files rather than normal excel spreadsheets (.xlsx files). So please save the files you want to import into R as .csv files.
+
+Also make sure they are tidy - e.g. data in two columns with no gaps in between, no random plots, random bits of writing etc., otherwise R won't know how to interpret it. 
+
+
+We will practice loading data into R now. Copy the following file into Excel:
+
+
+```{r, echo = F}
+p <- head(iris, 10)
+kable(p)
+```
+
+
+Now save the file in the R session folder you created. Call it `>something<` and save it as type CSV (Comma delimited).
+
+
+To read in your file you use the function `read.csv` in R:
+
+```{r, eval=FALSE}
+my_data <- read.csv(">something<.csv") 
+# here the file will be called my_data in R, and as the working directory will be the folder in which your data file is saved, R will find it there
+```
+
+
+You can also save files back into your working directory with the function `write.csv`, if you have changed them in R:
+
+```{r, eval = FALSE}
+write.csv(my_data, ">somethingelse<.csv") 
+# the first bit in the bracket is the name of the dataset in R, the second bit is the name of the new csv file you want to save
+```
+
+
+
+## Some basic outputs from a dataset
+
+Apart from the `str()` function, there are some other functions we can use to get an initial idea of our data. We can use `summary()` for the whole dataset. For continuous variables, this will show the minimum and maximum value, the quartiles and the mean. For categorical variables, it will show the different categories and a count of each one. We will use a built-in dataset called iris:
+
+```{r}
+summary(iris)
+```
+
+
+We can also get the summary for just one variable. We need to tell R in which dataset to look for it, and then add the column name after a dollar sign:
+
+```{r}
+summary(iris$Sepal.Length)
+```
+
+This also works for other functions, such as `mean`:
+```{r}
+mean(iris$Sepal.Length)
+```
+
+
+To get a better idea of your dataset, you can also use the `head` function, which will show the first 6 rows of the dataset, unless otherwise specified in the code:
+
+```{r}
+head(iris)
+
+head(iris, 10) 
+# this will show the first 10 rows
+```
+
+
+The same works for the last 6 rows with the tail function:
+
+```{r}
+tail(iris)
+
+tail(iris, 10)
+```
+
+
+
+## Changing the type of variable
+
+If variables are not in the right format, it can mess up our analysis or our plots, as R deals differently with different types of variables. Sometimes R does not read the variables in the right way, or we need to change the variable type for some reason. Once we have checked whether our variables are in the correct format, we can change those that are not:
+
+```{r}
+iris$Species<-as.character(iris$Species)
+
+# we can check what type of variable we have in different ways:
+str(iris$Species)
+is.character(iris$Species)
+```
+
+
+In this case, species should really be a factor, so we will change it back to that:
+
+```{r}
+iris$Species<-as.factor(iris$Species)
+```
+
+
+In the same way, we can change variables to integers (as.integer) or continuous variables (as.numeric).
+
+
+## How to install and load packages
+
+R has a huge library of additional packages. At some point you will most likely need to use some of these packages - they might be able to run some analyses which will save you from writing lots of code, contain some datasets that are of interest to you, or help with organising or displaying your data, for example. Some packages are very specific and will only be of interest to a few, whereas others are widely used. For a full list see https://cran.r-project.org/web/packages/available_packages_by_name.html  
+
+As with all programmes on your computer, you need to install a package the first time that you use it, and load it every following time. To install a package, you can either use the code
+
+```{r, eval=FALSE}
+install.packages("dplyr") # in this case, we are installing a package called dplyr
+```
+
+Or choose the package through the menu: `Tools > Install packages...`, then you can type the name of the package.  
+
+Once you have installed your package, you can load it:
+
+```{r}
+library(dplyr)
+```
+
+*Every time you start R, you will have to load the package again if you want to use a function in that package!*  
+
+To find out about all the different functions in a package, you can usually find a detailed description of all functions in a package (called vignette) online, just google `R package >packagename<`. For `dplyr`, this will get you the following pdf: https://cran.r-project.org/web/packages/dplyr/dplyr.pdf  
+
+`dplyr` is a useful package for manipulating data. We will use a dataset called airquality for some basic functions with `dplyr`. Some of the easiest to use functions in the package are `filter` and `select`.  
+
+`filter` will retain or remove rows in your dataset, according to conditions you set:
+
+```{r}
+temphigh <- filter(airquality, Temp > 79) 
+# this creates a new dataset called temphigh, which are all values from dataset airquality where temperature is above 79
+
+templow <- filter(airquality, Temp <= 79) 
+# this creates a new dataset called temphigh, which are all values from dataset airquality where temperature is below or at 79
+```
+
+Have a look how many observations there are in airquality, temphigh and templow.  
+
+We can also examine rows that contain NA values, or exclude rows that contain NA values. The structure is slightly different when it comes to including or excluding NAs:  
+```{r}
+summary(airquality) 
+# Ozone contains 37 rows with NA values
+ 
+airqualityNA <- filter(airquality, is.na(Ozone)) 
+# In this case we keep those rows where Ozone is NA
+
+summary(airqualityNA)
+
+airqualitynoNA <- filter(airquality, !is.na(Ozone)) 
+# Often we might want to remove NAs from our dataset, not keep them - we do this by adding ! in front of is.na. Here we keep rows if Ozone is not NA
+
+summary(airqualitynoNA)
+```
+
+Have a look at the different datasets, and make sure R is doing what you think it is doing.  
+
+The select function can be used to include or exclude columns from the dataset:
+
+```{r}
+airquality2 <- select(airquality, -Ozone) 
+# this will make a new dataset called airquality2, based on airquality, without the variable Ozone
+
+str(airquality2)
+
+airquality3 <- select(airquality, Ozone, Solar.R) 
+# this will make a new dataset called airquality3, based on airquality, with only the variables Ozone and Solar.R
+
+str(airquality3)
+```
+
+Again, examine the different datasets, and check that R is doing what you think it is doing.
+
+## Saving R files
+
+It is important to save your code - if you find a mistake in your dataset, or you need to run some analysis again, it will be much quicker to do if you have your code saved.  
+
+To save your R script, go to `File > Save as...` and then find the folder that you want to save your script in. 
+
+## Tidy code
+
+As a beginner, you have a unique opportunity to code in a tidy way from the start! For some reason, a lot of R courses do not cover this, but it is really important for readibility (for you AND others). Here are examples of what you should aim to do:  
+
+- Always have a space after a comma
+- Always have spaces before and after `<-`
+- Avoid capital letters (because R is case sensitive, this makes life so much easier)
+- Give your objects meaningful names. Do not call everything `data` for example
+
+BAD code:
+```{r}
+Data<-c(19,15,17,12,15,18,22) #these are summer temperatures in Newcastle
+```
+
+
+GOOD code:
+```{r}
+# Change the BAD code above to some nice, tidy code!
+```
+
+
+It is also *really important* that you annotate what you do, so if you come back to your code at a later date you know what you were doing. As a beginner, this is particularly important - if you have a really good memory, you might remember what all the functions do, but if you are like me you won't. Therefore, annotate as much as possible :)
+
+```{r}
+# if you add a hash, R won't execute what you write after it until the next line. This way you can annotate your code
+```
+
+It is also possible to add subheadings into your code. This is useful for long scripts in particular.
+
+```{r}
+# >Your amazing heading name<, followed by ####
+```
+- In your script window, at the bottom, your heading should appear next to the orange # sign   
+- If you click on a heading, it takes you to that part of your script  
+
+
+There are some great resources for ensuring your code is beautiful, for example by the British Ecological Society https://www.britishecologicalsociety.org/wp-content/uploads/2017/12/guide-to-reproducible-code.pdf
+
+
+## Solving problems in R/ help
+
+Sometimes it is difficult to know how exactly you need to write your code for a certain function, and you might get error messages. These can be difficult to interpret, especially if you are new to R. You can get more information on how to set up your code within a function by finding an R help file:
+
+```{r, eval=FALSE}
+?summary
+# this will tell you more about the summary function
+```
+
+The help files are very useful, and the more you use R, the better you will understand them. Often it is easiest to look at the example code at the end.
+
+You can google error messages, and are likely to find that other people have encountered them too. It is a bit of a learning curve to understand the responses, so the more you practice, the easier it gets.
+
+
+
+## Useful resources  
+
+### Online
+
+There is lots of information online about all kinds of R related problems, tutorials and so on. Here are a few that are particularly useful if you are new to R:
+
+- `R for data science`: a book about how to arrange your data, data visualisation, programming and model building in R. It is available for free online: https://r4ds.had.co.nz/  
+
+- `R bloggers`: each post covers a topic with some example code. This can be handy if you have a specific R-related problem, want to know some basic information about a new package you are using, etc.: https://www.r-bloggers.com/  
+
+- `Swirl stats`: Learn R, in R - this is an interactive tool with different modules that teach R within an R package: www.swirlstats.com   
+
+- `stackoverflow`: People can post R-related questions, and more experienced users help to find solutions. The examples provided in the questions need to be reproducible however. Often the questions you may have will already have been asked and answered on stackoverflow, so it is worth checking whether you can find a solution already: https://stackoverflow.com/ 
+
+
+### Checklist
+
+Other than those helpful resources here is a checklist of what to do if you are stuck with a problem in R:
+
+
+* First of all don't panic or get frustrated! Everyone will have a problem at some point in time if they are learning something new 
+
+
+* Have a sanity check and look for mistakes in your code e.g. spelling mistakes, an object isn't in your data environment, you haven't called library() before using a package.  
+
+
+* Google it! There is somewhat an art to wording your question in google to get the type of answers you are looking for but this will get better with practise. Chances are someone else will have definitely faced the same problem as you, even if it's not exactly in the same format and the answer is somewhere on the internet. 
+
+
+* Can you find an example of what you want where it works? Even if it's a simpler example understanding the basics of it might help you work out what's wrong.  Have a close look at that example, what exactly the data they used was, what format it was etc. 
+
+
+
+* Sometimes it's just better to walk away (for now). If you have been struggling for a couple of hours it's sometimes really good to just walk away from it and start again another day when you have a fresh pair of eyes (and hopefully some renewed patience). Or even just going for a small walk can help you get some clarity on the problem. 
+
+
+* If you really can't suss it ask a question on stack overflow (which can be quite intimidating as you need to follow certain rules e.g. have a small chunk of data which is reproducible)  
+
+
+* People trying to help you, particularly when it's someone that can't sit with you and actually see your computer (i.e. someone on the internet) often find it useful to have a reproducible example, creating one of these in itself can be quite challenging but have a look at the 'reprex' package, it helps you create a reproducible example snippet of your code which might help you to better understand your error/ problem and will help those people trying to help you
