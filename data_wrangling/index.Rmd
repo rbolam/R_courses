@@ -16,9 +16,9 @@ Today we will learn some useful data manipulation functions in R. A lot of this 
 ### Resources
 
 There are some useful cheat sheets available at https://rstudio.com/resources/cheatsheets/:  
-* Data Import Cheat Sheet
-* Data Transformation Cheat Sheet
-* Factors with forcats Cheat Sheet  
+- Data Import Cheat Sheet
+- Data Transformation Cheat Sheet
+- Factors with forcats Cheat Sheet  
 
 
 And this book on R for data science is useful too: http://r4ds.had.co.nz/   
@@ -359,3 +359,8 @@ ggplot(data = goals30, aes(x = fct_reorder(player, goals), y = goals)) +
   geom_col() +
   coord_flip()
 ```
+
+
+And that's it! You are now an expert at data wrangling, well done!
+
+![](https://media.giphy.com/media/PnnIEAOjAgM85sy5Om/giphy.gif)
