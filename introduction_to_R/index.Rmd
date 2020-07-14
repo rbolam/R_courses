@@ -2,11 +2,11 @@
 title: "Introduction to R"
 output:
   html_document: default
-  pdf_document: default
-  word_document: default
+  toc: true
+  toc_float: true
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE, warning = FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 ```
@@ -14,9 +14,10 @@ library(knitr)
 ## Aim of the workshop
 
 The aim of this session is to give you an overview of R, how the basics work, such as understanding different R objects, how to read in data, what different packages are and how to install them.  
+
 - What is R and RStudio
 - What are functions
-- Different objects in R
+- Different objects in 
 - What are packages
 - Tidy code
 - R help and resources
@@ -130,42 +131,29 @@ str(dat)
 Lists are ordered collections of objects and they can have different modes in one list
 
 ```{r}
-w <- list(name="Fred", mynumbers = a1, mymatrix = y, age = 5.3)
+w <- list(name = "Fred", mynumbers = a1, mymatrix = y, age = 5.3)
 str(w)
 ```
 
 ## Using data in R
 
-We will use data that is saved online to get started:
+We will use a dataframe that can be downloaded to get started:
 
 
-```{r, echo = F}
+```{r, echo = F, message = F}
 
 remotes::install_github("allisonhorst/palmerpenguins")
 library(palmerpenguins)
 data(package = 'palmerpenguins')
 
-p <- head(penguins, 10)
-kable(p)
 ```
 
+```{r, eval = F}
 
-Now save the file in the R session folder you created. Call it `>something<` and save it as type CSV (Comma delimited).
+remotes::install_github("allisonhorst/palmerpenguins")
+library(palmerpenguins)
+data(package = 'palmerpenguins')
 
-
-To read in your file you use the function `read.csv` in R:
-
-```{r, eval=FALSE}
-my_data <- read.csv(">something<.csv") 
-# here the file will be called my_data in R, and as the working directory will be the folder in which your data file is saved, R will find it there
-```
-
-
-You can also save files back into your working directory with the function `write.csv`, if you have changed them in R:
-
-```{r, eval = FALSE}
-write.csv(my_data, ">somethingelse<.csv") 
-# the first bit in the bracket is the name of the dataset in R, the second bit is the name of the new csv file you want to save
 ```
 
 

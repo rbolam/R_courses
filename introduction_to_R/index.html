@@ -368,8 +368,15 @@ summary {
 
 <div id="aim-of-the-workshop" class="section level2">
 <h2>Aim of the workshop</h2>
-<p>The aim of this session is to give you an overview of R, how the basics work, such as understanding different R objects, how to read in data, what different packages are and how to install them.<br />
-- What is R and RStudio - What are functions - Different objects in R - What are packages - Tidy code - R help and resources</p>
+<p>The aim of this session is to give you an overview of R, how the basics work, such as understanding different R objects, how to read in data, what different packages are and how to install them.</p>
+<ul>
+<li>What is R and RStudio</li>
+<li>What are functions</li>
+<li>Different objects in</li>
+<li>What are packages</li>
+<li>Tidy code</li>
+<li>R help and resources</li>
+</ul>
 </div>
 <div id="what-is-r" class="section level2">
 <h2>What is R?</h2>
@@ -478,7 +485,7 @@ dat</code></pre>
 <div id="data-types-in-r-list" class="section level2">
 <h2>Data types in R: List</h2>
 <p>Lists are ordered collections of objects and they can have different modes in one list</p>
-<pre class="r"><code>w &lt;- list(name=&quot;Fred&quot;, mynumbers = a1, mymatrix = y, age = 5.3)
+<pre class="r"><code>w &lt;- list(name = &quot;Fred&quot;, mynumbers = a1, mymatrix = y, age = 5.3)
 str(w)</code></pre>
 <pre><code>## List of 4
 ##  $ name     : chr &quot;Fred&quot;
@@ -488,121 +495,10 @@ str(w)</code></pre>
 </div>
 <div id="using-data-in-r" class="section level2">
 <h2>Using data in R</h2>
-<p>We will use data that is saved online to get started:</p>
-<pre><code>## Skipping install of &#39;palmerpenguins&#39; from a github remote, the SHA1 (72e0b436) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">species</th>
-<th align="left">island</th>
-<th align="right">bill_length_mm</th>
-<th align="right">bill_depth_mm</th>
-<th align="right">flipper_length_mm</th>
-<th align="right">body_mass_g</th>
-<th align="left">sex</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">39.1</td>
-<td align="right">18.7</td>
-<td align="right">181</td>
-<td align="right">3750</td>
-<td align="left">male</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">39.5</td>
-<td align="right">17.4</td>
-<td align="right">186</td>
-<td align="right">3800</td>
-<td align="left">female</td>
-</tr>
-<tr class="odd">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">40.3</td>
-<td align="right">18.0</td>
-<td align="right">195</td>
-<td align="right">3250</td>
-<td align="left">female</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="left">NA</td>
-</tr>
-<tr class="odd">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">36.7</td>
-<td align="right">19.3</td>
-<td align="right">193</td>
-<td align="right">3450</td>
-<td align="left">female</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">39.3</td>
-<td align="right">20.6</td>
-<td align="right">190</td>
-<td align="right">3650</td>
-<td align="left">male</td>
-</tr>
-<tr class="odd">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">38.9</td>
-<td align="right">17.8</td>
-<td align="right">181</td>
-<td align="right">3625</td>
-<td align="left">female</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">39.2</td>
-<td align="right">19.6</td>
-<td align="right">195</td>
-<td align="right">4675</td>
-<td align="left">male</td>
-</tr>
-<tr class="odd">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">34.1</td>
-<td align="right">18.1</td>
-<td align="right">193</td>
-<td align="right">3475</td>
-<td align="left">NA</td>
-</tr>
-<tr class="even">
-<td align="left">Adelie</td>
-<td align="left">Torgersen</td>
-<td align="right">42.0</td>
-<td align="right">20.2</td>
-<td align="right">190</td>
-<td align="right">4250</td>
-<td align="left">NA</td>
-</tr>
-</tbody>
-</table>
-<p>Now save the file in the R session folder you created. Call it <code>&gt;something&lt;</code> and save it as type CSV (Comma delimited).</p>
-<p>To read in your file you use the function <code>read.csv</code> in R:</p>
-<pre class="r"><code>my_data &lt;- read.csv(&quot;&gt;something&lt;.csv&quot;) 
-# here the file will be called my_data in R, and as the working directory will be the folder in which your data file is saved, R will find it there</code></pre>
-<p>You can also save files back into your working directory with the function <code>write.csv</code>, if you have changed them in R:</p>
-<pre class="r"><code>write.csv(my_data, &quot;&gt;somethingelse&lt;.csv&quot;) 
-# the first bit in the bracket is the name of the dataset in R, the second bit is the name of the new csv file you want to save</code></pre>
+<p>We will use a dataframe that can be downloaded to get started:</p>
+<pre class="r"><code>remotes::install_github(&quot;allisonhorst/palmerpenguins&quot;)
+library(palmerpenguins)
+data(package = &#39;palmerpenguins&#39;)</code></pre>
 </div>
 <div id="some-basic-outputs-from-a-dataset" class="section level2">
 <h2>Some basic outputs from a dataset</h2>
