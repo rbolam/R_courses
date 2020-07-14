@@ -2,8 +2,6 @@
 title: "Data wrangling using the tidyverse"
 author: "By Rike Bolam"
 date: "Last updated 14/07/2020"
-toc: true
-toc_float: true
 output: html_document
 ---
 
