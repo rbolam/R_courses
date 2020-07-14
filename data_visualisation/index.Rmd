@@ -1,8 +1,8 @@
 ---
 title: "Data visualisation tutorial"
+author: "Rike Bolam"
 output:
   html_document: default
-  word_document: default
 ---
 
 
@@ -14,12 +14,33 @@ library(gapminder)
 ```
 
 
-# Practical
+## Learning outcomes
 
+- Make different types of plots such as scatter plots, bar plots, histograms, box plots, area plots and density plot
+- Easily make subplots of your data with faceting 
+- Arrange plots in a grid
+- Customise your plots
+- Animate your plots
+
+
+
+```{r plot, echo = F, fig.height = 3.3, fig.width = 4.2}
+ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp,  size = pop, colour = continent)) +
+  geom_point(alpha = .7) +
+  facet_wrap(~ continent) +
+  scale_colour_brewer(palette = "Dark2") +
+  scale_size(name = "Population") +
+  guides(colour = "none") +
+  scale_x_log10() +
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'Life expectancy') +
+  transition_time(year)
+```
+
+
+
+## Getting started
 
 Please note: the code you need to type is in the grey boxes. Sometimes comments are added following a #, to further explain some of the code.
-
-## ggplot2  
 
 To start using ggplot2, first open RStudio, then install and load the package using `install.packages("ggplot2)`, then `library(ggplot2)`. 
 
