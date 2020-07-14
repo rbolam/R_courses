@@ -4,7 +4,7 @@ This repository contains some courses on learning new skills in R.
 
 
 ## [Introduction to R](https://rbolam.github.io/R_courses/introduction_to_R)
-This is an introductory course for complete beginners.  
+This is an introductory course for complete beginners - learn some basic things that you can do with R, what packages are, and how to read in data. Also includes resources on what to do when you get stuck.
 
 
 ## [Data wrangling](https://rbolam.github.io/R_courses/data_wrangling/)
