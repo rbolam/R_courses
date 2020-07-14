@@ -20,7 +20,7 @@ library(gapminder)
 - Easily make subplots of your data with faceting 
 - Arrange plots in a grid
 - Customise your plots
-- Animate your plots
+- Animate your plots:
 
 
 
@@ -28,7 +28,7 @@ library(gapminder)
 ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp,  size = pop, colour = continent)) +
   geom_point(alpha = .7) +
   facet_wrap(~ continent) +
-  scale_colour_brewer(palette = "Dark2") +
+  scale_colour_brewer(palette = "PRGn") +
   scale_size(name = "Population") +
   guides(colour = "none") +
   scale_x_log10() +
@@ -49,25 +49,25 @@ There is a lot of information about ggplot2 online, so if you get stuck you can 
 
 ## A very basic plot in ggplot2
 
-We will use data that are in-built in R for this session, using the iris and gapminder datasets. 
+We will use data that are in-built for this session, the gapminder dataset. 
 
 ```{r}
-str(iris) 
-# Have a look at the iris dataset, so you know which variables there are and what types of variables they are
+str(gapminder) 
+# Have a look at the gapminder dataset, so you know which variables there are and what types of variables they are
 ```
 
 We will start with some short code that will produce a plot in ggplot2. The basic pattern of the ggplot2 function first names the dataset, then the x and y variables. With ```geom_```, you add the type of plot you want:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
+ggplot(data = gapminder, aes(x = year, y = pop)) +
   geom_point() 
-# this will now produce a basic scatterplot of sepal lengths against petal lengths 
+# this will now produce a basic scatterplot
 ```
 
 The plot will be empty if you don't specify the type of plot you want:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, Petal.Length))
+ggplot(data = gapminder, aes(x = year, pop))
 ```
 
 
@@ -78,38 +78,38 @@ ggplot(data = iris, aes(x = Sepal.Length, Petal.Length))
 We can now start to customise the plot, so it looks exactly how we want it to look. We can change the axis labels by adding ```xlab``` or ```ylab```:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +  
+ggplot(data = gapminder, aes(x = year, y = pop)) +  
   geom_point() +
-  xlab("Sepal length") +
-  ylab("Petal length")
+  xlab("Year") +
+  ylab("population")
 ```
 
 
-**Exercise**: Change the variable on the x-axis from Sepal.Length to Petal.Width. Make sure to change the axis labels too.
+**Exercise**: Change the variable on the x-axis from pop to gdpPercap. Make sure to change the axis labels too.
 
 
 
 ### Size and transparency
 
-If you have a lot of data points, it can be difficult to see all of the points as they might overlap. You can change the size or transparency of the points so they are easier to see:
+If you have a lot of data points, it can be difficult to see all of the points as they might overlap. You can change the size or transparency of the points so they are easier to see, or move them about:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point(size = 3) 
+ggplot(data = gapminder, aes(x = year, y = pop)) +
+  geom_point(size = 0.1) 
 # changing the size to 3 will make the dots bigger
 
 
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
+ggplot(data = gapminder, aes(x = year, y = pop)) +
   geom_point(alpha = 0.3) 
 # Changing alpha to 0.3 will make the dots more transparent. Some of the dots appear darker because there is actually more than one data point in the same place
 
 
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point(size = 7, alpha = 0.2) 
-# You can change the look of a plot by changing both size and transparency
+ggplot(data = gapminder, aes(x = year, y = pop)) +
+  geom_jitter() 
+# Using geom_jitter instead of geom_point moves the points
 ```
 
-**Exercise**: Change size, transparency, or both so that the dots can be seen better.
+**Exercise**: Change size and transparency using geom_jitter, so that the dots can be seen better.
 
 
 
@@ -118,27 +118,27 @@ ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
 In ggplot2, we can change things like the colour, size or shape of our data points, either by changing all of them, or by making them look different depending on another variable. We can change the colour of all dots by defining the colour within ```geom_point()```:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point(color = "blue") 
+ggplot(data = gapminder, aes(x = year, y = pop)) +
+  geom_jitter(color = "turquoise3") 
 ```
 
-We could also change the colour of each dot, depending on the type of species it is. To do so we need to add ```aes``` within ```geom_point()```:
+We could also change the colour of each dot, depending on the continent. To do so we need to add ```aes``` within ```geom_point()```:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point(aes(color = Species))
+ggplot(data = gapminder, aes(x = year, y = pop)) +
+  geom_jitter(aes(color = continent))
 # Note that there is a legend in your plot now!
 ```
 
-The plot will be made with default colours, different for each species. To customise the colours, we need to adjust the scales:
+The plot will be made with default colours, different for each continent. To customise the colours, we need to adjust the scales:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point(aes(colour = Species)) +
-  scale_colour_brewer(palette = "Set2", name = "Iris species")
+ggplot(data = gapminder, aes(x = year, y = pop)) +
+  geom_jitter(aes(colour = continent)) +
+  scale_colour_brewer(palette = "RdBu", name = "Continent")
 ```
 
-The scale function is used to customise how our data look, in this case we want to customise the colours in the plot. Whatever we specified in ```geom_point``` as an aesthetic, in this case colour, we need to put into the scale function: ```scale_colour```. Here we will use colours from the RColorBrewer package, so we add ```brewer``` at the end. Inside the bracket we specify which colours we want to use, and ```name``` specifies the title of the legend. If you want to see all of the colour options in RColorBrewer, run the following code:
+The scale function is used to customise how our data look, in this case we want to customise the colours in the plot. Whatever we specified in ```geom_jitter``` as an aesthetic, in this case colour, we need to put into the scale function: ```scale_colour```. Here we will use colours from the RColorBrewer package, so we add ```brewer``` at the end. Inside the bracket we specify which colours we want to use, and ```name``` specifies the title of the legend. If you want to see all of the colour options in RColorBrewer, run the following code:
 
 ```{r, eval=FALSE}
 library(RColorBrewer)
@@ -149,12 +149,12 @@ display.brewer.all()
 **Exercise**: Change the colours of the plot, by picking a colour option from RColorBrewer.
 
 
-In the previous example we used a categorical variable (Species) to set the colours. We can also use continuous variables for colours - the colours will change along a gradient:
+In the previous example we used a categorical variable (continent) to set the colours. We can also use continuous variables for colours - the colours will change along a gradient:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point(aes(colour = Petal.Width)) +
-  scale_colour_gradient(low = "yellow", high = "blue", name = "Petal width")
+ggplot(data = gapminder, aes(x = year, y = pop)) +
+  geom_jitter(aes(colour = gdpPercap)) +
+  scale_colour_gradient(low = "yellow", high = "blue", name = "GDP per capita")
 ```
 
 In this example, we did not use RColorBrewer, but in-built R colour names. You can find a (very long) list of colour names in R here: http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
@@ -163,36 +163,22 @@ In this example, we did not use RColorBrewer, but in-built R colour names. You c
 **Exercise**: Change the colours in the plot, using the in-built R colour names.
 
 
-**Exercise**: We can also change the size of the dot according to another variable. Instead of changing the colour, can you change the size of the dot according to the Petal.Width variable? What is the difference in the code between making all dots bigger, and making them bigger depending on another variable?
+**Exercise**: We can also change the size of the dot according to another variable. Instead of changing the colour, can you change the size of the dot according to the GDP variable? What is the difference in the code between making all dots bigger, and making them bigger depending on another variable?
 
 
 
 ### Shapes
 
 
-We can change the dots to different symbols too, for example open circles or triangles. Each symbol corresponds to a number, which we add in ```geom_point()```:
+We can change the dots to different symbols too, for example open circles or triangles. Each symbol corresponds to a number, which we add in ```geom_point()``` or ```geom_jitter()```:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point(shape = 1)
-  
+ggplot(data = gapminder, aes(x = year, y = pop)) +
+  geom_jitter(shape = 1)
 ```
 
 **Exercise**: Can you change the symbol to a square, and then to a cross? Use the ggplot2 cheat sheet (link at the start of this document) to find which number corresponds to which.
 
-
-
-### Adding a line from your model
-
-If you are presenting data to which you fitted a model, you can add the line by using ```geom_smooth()```:
-
-```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point() +
-  geom_smooth(method = glm)
-  # Here we fit a generalised linear model to the data. 95% confidence intervals are displayed automatically
-
-```
 
 
 ## Customising the overall look of the plot
@@ -201,8 +187,8 @@ ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
 We can change the overall look of the plot by changing the theme. The theme will not affect how your plotted data look, just the setup of the plot:
 
 ```{r}
-ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point() +
+ggplot(data = gapminder, aes(x = year, y = pop)) +
+  geom_jitter() +
   theme_classic()
 ```
 
@@ -214,11 +200,8 @@ For a list of themes see http://ggplot2.tidyverse.org/reference/ggtheme.html.
 
 ## Using ggplot2 for different types of plots 
 
-Your plots will look different depending on the variables you are displaying - whether there are one, two or more to display, and whether they are categorical, ordinal or continuous. We will now use the dataset gapminder which is part of the gapminder package:
+Your plots will look different depending on the variables you are displaying - whether there are one, two or more to display, and whether they are categorical, ordinal or continuous.  
 
-```{r}
-str(gapminder)
-```
 
 ### One continuous variable
 
@@ -267,7 +250,7 @@ ggplot(data = gapminder, aes(x = continent)) +
 ### Two continuous variables
 
 
-If you have two continuous variables, you normally represent them with dots - see the examples from the iris dataset we used at the start.
+If you have two continuous variables, you normally represent them with dots - see the examples we used at the start.
 
 
 ### One continuous and one categorical variable
@@ -304,7 +287,7 @@ Now we will make the points a bit more transparent, by setting alpha. We will al
 ```{r}
 ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp,  size = pop, colour = continent)) +
   geom_point(alpha = .7) +
-  scale_colour_brewer(palette = "Dark2")
+  scale_colour_brewer(palette = "PRGn")
 ```
 
 **Exercise**: Change the palette to a different one. Check http://colorbrewer2.org/ for more palettes, and pick one that is colour-blind friendly.
@@ -314,9 +297,8 @@ Now we will make subplots, by splitting the data according to the continent:
 ```{r}
 ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp,  size = pop, colour = continent)) +
   geom_point(alpha = .7) +
-  facet_wrap(~ continent) +  # we need ~ in front of the variable, as we could facet by another one
-  # then the format would be facet_wrap(variable1 ~ variable2)
-  scale_colour_brewer(palette = "Dark2")
+  facet_wrap(~ continent) +  # we need ~ in front of the variable, as we could facet by another     # variable - then the format would be facet_wrap(variable1 ~ variable2)
+  scale_colour_brewer(palette = "PRGn")
 ```
 
 
@@ -326,7 +308,7 @@ We will change a few more things, to make sure this will look really nice in the
 ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp,  size = pop, colour = continent)) +
   geom_point(alpha = .7) +
   facet_wrap(~ continent) +
-  scale_colour_brewer(palette = "Dark2") +
+  scale_colour_brewer(palette = "PRGn") +
   scale_size(name = "Population") +
   guides(colour = "none") +
   scale_x_log10() +
@@ -341,7 +323,7 @@ Finally, we will add the code to make the plot show each year individually. We u
 ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp,  size = pop, colour = continent)) +
   geom_point(alpha = .7) +
   facet_wrap(~ continent) +
-  scale_colour_brewer(palette = "Dark2") +
+  scale_colour_brewer(palette = "PRGn") +
   scale_size(name = "Population") +
   guides(colour = "none") +
   scale_x_log10() +
