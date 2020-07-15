@@ -1,8 +1,12 @@
 ---
 title: "Data wrangling using the tidyverse"
 author: "By Rike Bolam"
-date: "Last updated 14/07/2020"
-output: html_document
+date: "Last updated 15/07/2020"
+output: 
+  html_document:
+    toc: yes
+    toc_float: true
+    toc_depth: 5
 ---
 
 ```{r setup, include=FALSE}
