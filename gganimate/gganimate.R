@@ -19,6 +19,6 @@ p <- ggplot(data = gapminder,
   transition_time(year)                 ## cycle through years
 
 animate(p)                              ## if all goes well, should make a GIF
-anim_save("animation.gif")              ## and this saves the GIF
+anim_save("gganimate/animation.gif")              ## and this saves the GIF
 
 
