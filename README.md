@@ -19,3 +19,5 @@ This course will teach you to code plots with the ggplot2 package from the tidyv
 Learn how to make maps that show variables by country.
 
  
+ 
+ 
